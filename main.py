@@ -1,16 +1,10 @@
-from typing import Final
-from telegram import Update
-from telegram.ext import Application, CommandHandler, MessageHandler, ContextTypes, filters
-from decouple import config
-from unidecode import unidecode
-from openpyxl.reader.excel import load_workbook
-from openpyxl.worksheet.worksheet import Worksheet
+from texts import *
 
 Tk = config('token')
-BOT_USERNAME: Final = '@iaun_computer_faculty_bot'
 users_result = []
 
 
+#finding empty rows in excel file
 def find_empty_row(sheet: Worksheet) -> int:
     row_number = 3
     while True:
@@ -24,14 +18,12 @@ workbook = load_workbook('base.xlsx')
 worksheet = workbook.active
 
 
-#bot part
+#bot commands
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text="""🔻فرمت درخواست به شکل زیر می‌باشد. در صورتی که ترم آخر می‌باشید، به صورت جداگانه ذکر کنید.
-
-نام و نام خانوادگی + شماره دانشجویی + نام درس + کد ارائه""",)
+        text=start_command_message)
 
 
 
@@ -39,13 +31,11 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text = 
-"""برای اطلاعات بیشتر به آیدی زیر پیام دهید :
-@nima_kiani""")
+        text =help_command_message)
 
 
 
-#responses
+#bot responses
 def handle_responses(text: str) -> str:
 
     proccessed: str = text
@@ -53,10 +43,7 @@ def handle_responses(text: str) -> str:
 
 
     if len(user_text) != 4:
-        return """
-❌ لطفا درخواست خود را طبق فرمت گفته شده ارسال کنید
-راهنمایی /help
-"""
+        return incorrect_length_message
 
 
     
@@ -67,27 +54,26 @@ def handle_responses(text: str) -> str:
 
 
     if student_name.isnumeric():
-        return "❗️ لطفا نام و نام خانوادگی خود را به درستی وارد کنید"
+        return incorrect_username_message
     
-    if not student_id.isnumeric():
-        return "❗️ لطفا شماره دانشجویی خود را به درستی وارد کنید"
+    if (not student_id.isnumeric()) or (len(student_id) not in [8, 11, 14]):
+        return incorrect_studentid_message
     
     if student_course.isnumeric():
-        return "❗️ لطفا نام درس را به درستی وارد کنید"
+        return incorrect_course_message
     
     if not student_course_id.isnumeric():
-        return "❗️ لطفا کد ارائه درس را به درستی وارد کنید"
+        return incorrect_courseid_message
 
-    if len(student_id) != 14:
-        return "❗️ لطفا شماره دانشجویی خود را به درستی وارد کنید"
-    
+
+    #adding data to excel file
     row_number = find_empty_row(worksheet)
     worksheet[f"A{row_number}"] = student_name
     worksheet[f"B{row_number}"] = student_id
     worksheet[f"C{row_number}"] = student_course
     worksheet[f"D{row_number}"] = student_course_id
     workbook.save('base.xlsx')
-    return "✅ درخواست شما دریافت شد"
+    return recieved_request_message
 
 
 async def handle_messages(update: Update, context: ContextTypes.DEFAULT_TYPE):
