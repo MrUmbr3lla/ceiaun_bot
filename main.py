@@ -39,6 +39,23 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 def handle_responses(text: str) -> str:
 
     proccessed: str = text
+
+
+    #convert course name for Amoozeshyar
+    if 'تبدیل' in proccessed:
+        chars = list(proccessed)
+        course_name = chars[5:]
+        if course_name[-1] != ' ':
+            course_name.append(' ')
+        modified_name = ''.join([sub
+                                 .replace(' ', '%')
+                                 .replace('ی' , '%')
+                                 .replace('ک' , '%')
+                                 .replace('ي' , '%')
+                                 .replace('ك' , '%')
+                                 for sub in course_name])
+        return modified_name
+
     user_text = proccessed.split('+')
 
 
