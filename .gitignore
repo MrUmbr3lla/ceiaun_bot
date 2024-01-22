@@ -1,4 +1,8 @@
-.env
+.idea
 botenv
+venv
+.env
 __pycache__
 *.pyc
+generated_files
+logs
