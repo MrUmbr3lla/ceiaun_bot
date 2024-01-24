@@ -11,11 +11,27 @@ from utils import create_new_sheet, write_data_to_sheet
 
 logger = logging.getLogger(__name__)
 
+### sending document
+async def chart_dorus_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await context.bot.send_document(
+        chat_id=update.effective_chat.id,
+        document='BQACAgQAAxkBAAERPi1lsWN1VBB6czr0HQM5Q4J31AABCCIAAnsVAAL5hIhRWRHMoy7Si640BA',
+        caption='test',
+        read_timeout= 20)
+    
+async def chart_pishnahadi_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await context.bot.send_document(
+        chat_id=update.effective_chat.id,
+        document='BQACAgQAAxkBAAERPitlsWIB7Lw7uhjcD3Okr-tupMXk8QACcxUAAvmEiFH7fwL8DbFr7zQE',
+        caption='test',
+        read_timeout= 20)
+###
 
+#start command
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(text=messages.START_COMMAND)
 
-
+#help command
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(text=messages.HELP_COMMAND)
 
@@ -61,7 +77,6 @@ def handle_responses(text: str) -> str:
         return messages.INCORRECT_COURSE_ID
 
     # adding data to excel file
-
     write_data_to_sheet(
         settings.EXCEL_TEMP_FILE,
         [student_name, student_id, student_course, student_course_id],
@@ -99,6 +114,8 @@ if __name__ == "__main__":
         # Commands
         CommandHandler("start", start_command),
         CommandHandler("help", help_command),
+        CommandHandler("chart_dorus" , chart_dorus_command),
+        CommandHandler("chart_pishnahadi" , chart_pishnahadi_command),
 
         # Messages
         MessageHandler(filters.TEXT, handle_messages),
