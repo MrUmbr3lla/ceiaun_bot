@@ -11,19 +11,25 @@ from utils import create_new_sheet, write_data_to_sheet
 
 logger = logging.getLogger(__name__)
 
-### sending document
-async def chart_dorus_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+### sending document and images
+async def courses_list_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    pdf_file_ids = ["BQACAgQAAxkBAAERQchlsqa3xFmSXfABvUHTXX2ok898mQACZxMAAuzEmFF8Y_udZ853fDQE" ,
+                     "BQACAgQAAxkBAAERQcplsqdGbWmvvYbUtMFiGUzu__Z0AwACaBMAAuzEmFHUtAL08qrosjQE" ,
+                       "BQACAgQAAxkBAAERQcxlsqeiGKn4AYw3Gt3ozIZecnPHhgACahMAAuzEmFF0tVps11pNfTQE" ,
+                         "BQACAgQAAxkBAAERQc5lsqhZS4ez3M7m-gkV7KvWvjOHzAACcxMAAuzEmFGJtZkWGh12zTQE"]
+    for file_id in pdf_file_ids:
+        await context.bot.send_document(
+            chat_id=update.effective_chat.id,
+            document=file_id,
+            read_timeout= 20)
+
+
+async def request_sample_image_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_document(
         chat_id=update.effective_chat.id,
-        document='BQACAgQAAxkBAAERPi1lsWN1VBB6czr0HQM5Q4J31AABCCIAAnsVAAL5hIhRWRHMoy7Si640BA',
-        caption='test',
-        read_timeout= 20)
-    
-async def chart_pishnahadi_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await context.bot.send_document(
-        chat_id=update.effective_chat.id,
-        document='BQACAgQAAxkBAAERPitlsWIB7Lw7uhjcD3Okr-tupMXk8QACcxUAAvmEiFH7fwL8DbFr7zQE',
-        caption='test',
+        document='BQACAgQAAxkBAAERQbplsqGzCXckULyjEcCi7KYimZQ7nwACXBMAAuzEmFF7PxG6n1YC0TQE',
+        caption=messages.START_COMMAND,
         read_timeout= 20)
 ###
 
@@ -114,8 +120,8 @@ if __name__ == "__main__":
         # Commands
         CommandHandler("start", start_command),
         CommandHandler("help", help_command),
-        CommandHandler("chart_dorus" , chart_dorus_command),
-        CommandHandler("chart_pishnahadi" , chart_pishnahadi_command),
+        CommandHandler("chart_dorus" , courses_list_command),
+        CommandHandler("request" , request_sample_image_command),
 
         # Messages
         MessageHandler(filters.TEXT, handle_messages),
