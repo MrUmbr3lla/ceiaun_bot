@@ -29,7 +29,15 @@ async def request_sample_image_command(update: Update, context: ContextTypes.DEF
     await context.bot.send_document(
         chat_id=update.effective_chat.id,
         document='BQACAgQAAxkBAAERQbplsqGzCXckULyjEcCi7KYimZQ7nwACXBMAAuzEmFF7PxG6n1YC0TQE',
-        caption=messages.START_COMMAND,
+        caption=messages.REQUEST_COMMAND,
+        read_timeout= 20)
+    
+
+async def convert_name_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await context.bot.send_document(
+        chat_id=update.effective_chat.id,
+        document='BQACAgQAAxkBAAERRBNls8MZZssIp25sUyIFm4sSdA9A3gAC2REAAuzEoFGVPSBbUfUdyjQE',
+        caption=messages.CONVERT_NAME_COMMAND,
         read_timeout= 20)
 ###
 
@@ -122,6 +130,7 @@ if __name__ == "__main__":
         CommandHandler("help", help_command),
         CommandHandler("chart_dorus" , courses_list_command),
         CommandHandler("request" , request_sample_image_command),
+        CommandHandler("convert_name" , convert_name_command),
 
         # Messages
         MessageHandler(filters.TEXT, handle_messages),
