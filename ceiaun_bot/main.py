@@ -2,6 +2,7 @@ import logging
 import os.path
 
 from telegram import Update
+from telegram import KeyboardButton,ReplyKeyboardMarkup
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
 from unidecode import unidecode
 
@@ -11,13 +12,27 @@ from utils import create_new_sheet, write_data_to_sheet
 
 logger = logging.getLogger(__name__)
 
-### sending document and images
-async def courses_list_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+keys = [[KeyboardButton("درخواست افزایش ظرفیت")],
+         [KeyboardButton("ابزار تبدیل متن") , KeyboardButton("چارت دروس")]]
+key_markup = ReplyKeyboardMarkup(keys , resize_keyboard=True , one_time_keyboard=True)
 
-    pdf_file_ids = ["BQACAgQAAxkBAAERQchlsqa3xFmSXfABvUHTXX2ok898mQACZxMAAuzEmFF8Y_udZ853fDQE" ,
-                     "BQACAgQAAxkBAAERQcplsqdGbWmvvYbUtMFiGUzu__Z0AwACaBMAAuzEmFHUtAL08qrosjQE" ,
-                       "BQACAgQAAxkBAAERQcxlsqeiGKn4AYw3Gt3ozIZecnPHhgACahMAAuzEmFF0tVps11pNfTQE" ,
-                         "BQACAgQAAxkBAAERQc5lsqhZS4ez3M7m-gkV7KvWvjOHzAACcxMAAuzEmFGJtZkWGh12zTQE"]
+buttons = ["درخواست افزایش ظرفیت" , "چارت دروس" , "ابزار تبدیل متن"]
+
+### sending document and images
+async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await context.bot.send_document(
+        chat_id=update.effective_chat.id,
+        document='BQACAgQAAxkBAAERRedltOR9eHOnJlCGmNmKlKQpkrVDHwAC4RAAAkpOqFHnytMdXl323zQE',
+        caption=messages.START_COMMAND,
+        reply_markup=key_markup,
+        read_timeout= 20)
+
+
+async def courses_list_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    pdf_file_ids = ["BQACAgQAAxkDAAPkZbZ_YkGd_DXFw_wyDBjH6EZRBmcAAnYUAAIZD7FRxvHkRVIWpJY0BA" , #لیست نرم افزار
+                     "BQACAgQAAxkDAAPrZbaBDjIFWbLpNHcCjo53B-FVK0cAAoUUAAIZD7FRA6rSpl77Sbc0BA" , # لیست دروس فناوری اطلاعات
+                       "BQACAgQAAxkDAAPtZbaBeZfNBWuqrG5Lhg5CpQdZOsYAAocUAAIZD7FRk3YrvhJRQoE0BA" , # چارت پیشنهادی نرم افزار
+                         "BQACAgQAAxkDAAPuZbaBsMeu0Rw1kCQG3F9f9RKYPBoAAokUAAIZD7FROhPmiPgnhh40BA"] # چارت پیشنهادی فناوری اطلاعات
     for file_id in pdf_file_ids:
         await context.bot.send_document(
             chat_id=update.effective_chat.id,
@@ -28,7 +43,7 @@ async def courses_list_command(update: Update, context: ContextTypes.DEFAULT_TYP
 async def request_sample_image_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_document(
         chat_id=update.effective_chat.id,
-        document='BQACAgQAAxkBAAERQbplsqGzCXckULyjEcCi7KYimZQ7nwACXBMAAuzEmFF7PxG6n1YC0TQE',
+        document='BQACAgQAAxkDAAPQZbTmuFiI9B_rxHw_rSZGGRZEpygAAukQAAJKTqhRlM4x2o8RDP00BA',
         caption=messages.REQUEST_COMMAND,
         read_timeout= 20)
     
@@ -36,18 +51,10 @@ async def request_sample_image_command(update: Update, context: ContextTypes.DEF
 async def convert_name_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_document(
         chat_id=update.effective_chat.id,
-        document='BQACAgQAAxkBAAERRBNls8MZZssIp25sUyIFm4sSdA9A3gAC2REAAuzEoFGVPSBbUfUdyjQE',
+        document='BQACAgQAAxkDAAPTZbTnHtO7g4RSzZpjpVermVDiNxUAAuoQAAJKTqhRx4DZ0PaIqU00BA',
         caption=messages.CONVERT_NAME_COMMAND,
         read_timeout= 20)
 ###
-
-#start command
-async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(text=messages.START_COMMAND)
-
-#help command
-async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(text=messages.HELP_COMMAND)
 
 
 def handle_responses(text: str) -> str:
@@ -127,7 +134,6 @@ if __name__ == "__main__":
     app.add_handlers([
         # Commands
         CommandHandler("start", start_command),
-        CommandHandler("help", help_command),
         CommandHandler("chart_dorus" , courses_list_command),
         CommandHandler("request" , request_sample_image_command),
         CommandHandler("convert_name" , convert_name_command),
