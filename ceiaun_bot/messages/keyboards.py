@@ -1,6 +1,6 @@
-# Home
 from telegram import KeyboardButton, ReplyKeyboardMarkup
 
+# Home
 HOME_COURSE_REQUEST = "درخواست افزایش ظرفیت"
 HOME_CONVERT_NAME = "ابزار تبدیل متن"
 HOME_CHART = "چارت دروس"
@@ -16,4 +16,17 @@ HOME_KEYBOARD = ReplyKeyboardMarkup(
     ],
     resize_keyboard=True,
     one_time_keyboard=True
+)
+
+# Back
+BACK = "برگشت"
+
+BACK_KEYBOARD = ReplyKeyboardMarkup(
+    [
+        [
+            KeyboardButton(BACK)
+        ]
+    ],
+    resize_keyboard=True,
+    one_time_keyboard=False
 )
