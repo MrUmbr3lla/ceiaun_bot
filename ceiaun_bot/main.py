@@ -1,26 +1,25 @@
 import logging
 import os.path
 
-from telegram import KeyboardButton, ReplyKeyboardMarkup, Update
+from telegram import InputMediaDocument, Update
+from telegram.constants import ParseMode
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
 
 import settings
-from messages import messages
+from messages import keyboards, messages
 from utils import create_new_sheet
 
 logger = logging.getLogger(__name__)
 
 
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    keys = [[KeyboardButton("درخواست افزایش ظرفیت")],
-            [KeyboardButton("ابزار تبدیل متن"), KeyboardButton("چارت دروس")]]
-    key_markup = ReplyKeyboardMarkup(keys, resize_keyboard=True, one_time_keyboard=True)
-    await context.bot.send_document(
-        chat_id=update.effective_chat.id,
-        document='BQACAgQAAx0Edz5chAADCWW340mbGOmLl-WAtkCOFxEm1L5kAAIPEAACi4zBUS36-Kc0q-JeNAQ',
-        reply_markup=key_markup,
+    await update.message.reply_document(
+        quote=True,
+        document=settings.FILE_HOME_IMAGE,
+        reply_markup=keyboards.HOME_KEYBOARD,
         caption=messages.START_COMMAND,
-        read_timeout=20)
+        read_timeout=20
+    )
 
 
 async def handle_messages(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -29,14 +28,40 @@ async def handle_messages(update: Update, context: ContextTypes.DEFAULT_TYPE):
     users_id = update.message.from_user.username
 
     # sending courses_list (done)
-    if "چارت دروس" in text:
+    if text == keyboards.HOME_CHART:
+        # Send orient help
+        await update.message.reply_text(
+            quote=True,
+            text=messages.CHART_SELECT_ORIENT,
+            parse_mode=ParseMode.HTML
+        )
 
-        for file_id in settings.FILE_SE_CHARTS + settings.FILE_IT_CHARTS:
-            await context.bot.send_document(
-                chat_id=update.effective_chat.id,
-                document=file_id,
-                read_timeout=20
-            )
+        # Send se chart
+        await context.bot.send_media_group(
+            chat_id=update.effective_chat.id,
+            media=[
+                InputMediaDocument(settings.FILE_SE_CHARTS[0]),
+                InputMediaDocument(
+                    settings.FILE_SE_CHARTS[1],
+                    caption=messages.CHART_SE_CAPTION,
+                    parse_mode=ParseMode.HTML
+                )
+            ],
+            read_timeout=20
+        )
+        # Send it charts
+        await context.bot.send_media_group(
+            chat_id=update.effective_chat.id,
+            media=[
+                InputMediaDocument(settings.FILE_IT_CHARTS[0]),
+                InputMediaDocument(
+                    settings.FILE_IT_CHARTS[1],
+                    caption=messages.CHART_IT_CAPTION,
+                    parse_mode=ParseMode.HTML
+                )
+            ],
+            read_timeout=20
+        )
 
     # converting courses name (unfinished)
     if "ابزار تبدیل متن" in text:
