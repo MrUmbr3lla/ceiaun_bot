@@ -49,7 +49,7 @@ async def handle_messages(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(
             quote=True,
             text=messages.CHART_SELECT_ORIENT,
-            parse_mode=ParseMode.HTML
+            parse_mode=ParseMode.HTML,
         )
 
         # Send se chart
@@ -72,18 +72,11 @@ async def handle_messages(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 InputMediaDocument(
                     settings.FILE_IT_CHARTS[1],
                     caption=messages.CHART_IT_CAPTION,
-                    parse_mode=ParseMode.HTML
+                    parse_mode=ParseMode.HTML,
+                    reply_markup=keyboards.HOME_KEYBOARD
                 )
             ],
         )
-
-        # Send home message
-        await context.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text=messages.HOME_SHORT,
-            reply_markup=keyboards.HOME_KEYBOARD
-        )
-
         return None
 
     # converting courses name (unfinished)
