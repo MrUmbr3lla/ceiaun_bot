@@ -61,13 +61,6 @@ async def handle_messages(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # sending courses_list
     if text == keyboards.HOME_CHART:
-        # Send orient help
-        await update.message.reply_text(
-            quote=True,
-            text=messages.CHART_SELECT_ORIENT,
-            parse_mode=ParseMode.HTML,
-        )
-
         # Send se chart
         await context.bot.send_media_group(
             chat_id=update.effective_chat.id,
@@ -88,9 +81,15 @@ async def handle_messages(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 InputMediaDocument(
                     settings.FILE_IT_CHARTS[1],
                     caption=messages.CHART_IT_CAPTION,
-                    parse_mode=ParseMode.HTML
+                    parse_mode=ParseMode.HTML,
                 )
             ],
+        )
+        # Send orient help
+        await update.message.reply_text(
+            quote=True,
+            text=messages.CHART_SELECT_ORIENT,
+            parse_mode=ParseMode.HTML,
             reply_markup=keyboards.HOME_KEYBOARD
         )
 
@@ -98,11 +97,11 @@ async def handle_messages(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # converting courses name
     if text == keyboards.HOME_CONVERT_NAME:
-        await context.bot.send_document(
-            chat_id=update.effective_chat.id,
+        await update.message.reply_document(
             document=settings.FILE_CONVERT_NAME,
             caption=messages.CONVERT_NAME_COMMAND,
             reply_markup=keyboards.BACK_KEYBOARD,
+            quote=True
         )
 
         return CONVERT_COURSE
@@ -112,7 +111,8 @@ async def handle_messages(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_document(
             document=settings.FILE_COURSE_REQUEST,
             caption=messages.REQUEST_COMMAND,
-            reply_markup=keyboards.BACK_KEYBOARD
+            reply_markup=keyboards.BACK_KEYBOARD,
+            quote=True
         )
 
         return REQUEST_COURSE
