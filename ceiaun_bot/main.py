@@ -1,9 +1,12 @@
 import logging
 import os.path
 
-from telegram import InputMediaDocument, Update
+from telegram import InputMediaDocument, Update, User
 from telegram.constants import ParseMode
-from telegram.ext import Application, CommandHandler, ContextTypes, ConversationHandler, MessageHandler, filters
+from telegram.ext import (
+    Application, CommandHandler, ContextTypes, ConversationHandler, MessageHandler,
+    PersistenceInput, PicklePersistence, filters
+)
 
 import settings
 from messages import keyboards, messages
@@ -16,7 +19,22 @@ HOME, REQUEST_COURSE, GET_CHARTS, CONVERT_COURSE = map(chr, range(4))
 END = ConversationHandler.END
 
 
+def save_user(context: ContextTypes.DEFAULT_TYPE, effective_user: User) -> None:
+    user_id = effective_user.id
+    username = effective_user.username
+    user_full_name = effective_user.full_name
+
+    user_list = context.bot_data.get("user_list", set())
+    if user_id not in user_list:
+        logger.info(f"New user: {user_id} / username: @{username} / full name: {user_full_name}")
+        user_list.add(user_id)
+        context.bot_data["user_list"] = user_list
+
+
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    save_user(context, update.effective_user)
+    logger.info(context.user_data)
+
     await update.message.reply_document(
         quote=True,
         document=settings.FILE_HOME_IMAGE,
@@ -39,11 +57,9 @@ async def back_home(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def handle_messages(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    message_type = update.message.chat.type
     text = update.message.text
-    users_id = update.message.from_user.username
 
-    # sending courses_list (done)
+    # sending courses_list
     if text == keyboards.HOME_CHART:
         # Send orient help
         await update.message.reply_text(
@@ -72,14 +88,15 @@ async def handle_messages(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 InputMediaDocument(
                     settings.FILE_IT_CHARTS[1],
                     caption=messages.CHART_IT_CAPTION,
-                    parse_mode=ParseMode.HTML,
-                    reply_markup=keyboards.HOME_KEYBOARD
+                    parse_mode=ParseMode.HTML
                 )
             ],
+            reply_markup=keyboards.HOME_KEYBOARD
         )
-        return None
 
-    # converting courses name (unfinished)
+        return HOME
+
+    # converting courses name
     if text == keyboards.HOME_CONVERT_NAME:
         await context.bot.send_document(
             chat_id=update.effective_chat.id,
@@ -90,19 +107,15 @@ async def handle_messages(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         return CONVERT_COURSE
 
-    # students requests (unfinished)
+    # students requests
     if text == keyboards.HOME_COURSE_REQUEST:
-        await context.bot.send_document(
-            chat_id=update.effective_chat.id,
+        await update.message.reply_document(
             document=settings.FILE_COURSE_REQUEST,
             caption=messages.REQUEST_COMMAND,
             reply_markup=keyboards.BACK_KEYBOARD
         )
 
         return REQUEST_COURSE
-
-    logger.info(f"user id is = {users_id}")
-    logger.info(f" user{update.message.chat.id} in {message_type}: {text}")
 
 
 async def handle_convert_course(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -151,11 +164,16 @@ if __name__ == "__main__":
     if not os.path.exists(settings.EXCEL_TEMP_FILE):
         create_new_sheet("temp")
 
-    app = Application.builder().token(settings.BOT_TOKEN).build()
+    persistence = PicklePersistence(
+        filepath=settings.BOT_DATABASE_DIR / "bot",
+        store_data=PersistenceInput(chat_data=False, callback_data=False),
+        single_file=False,
+        update_interval=settings.BOT_DATABASE_UPDATE_INTERVAL
+    )
+    app = Application.builder().token(settings.BOT_TOKEN).persistence(persistence).build()
 
     all_keyboards = (
-        f"^({keyboards.HOME_COURSE_REQUEST}|{keyboards.HOME_CONVERT_NAME}|{keyboards.HOME_CHART}|"
-        f"{keyboards.BACK})$"
+        f"^({keyboards.HOME_COURSE_REQUEST}|{keyboards.HOME_CONVERT_NAME}|{keyboards.HOME_CHART}|{keyboards.BACK})$"
     )
     main_conv = ConversationHandler(
         entry_points=[
@@ -179,6 +197,8 @@ if __name__ == "__main__":
         fallbacks=[
             MessageHandler(filters.TEXT, start_command),
         ],
+        name="main_conv",
+        persistent=True
     )
 
     app.add_handlers([

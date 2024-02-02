@@ -1,8 +1,11 @@
 .idea
+__pycache__
+*.pyc
+
 botenv
 venv
 .env
-__pycache__
-*.pyc
+
 generated_files
 logs
+*/data/bot
