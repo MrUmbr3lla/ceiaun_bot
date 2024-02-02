@@ -33,7 +33,7 @@ def run():
     all_keyboards = (
         f"^({keyboards.HOME_COURSE_REQUEST}|{keyboards.HOME_CONVERT_NAME}|{keyboards.HOME_CHART}|{keyboards.BACK})$"
     )
-    main_conv = ConversationHandler(
+    user_conv = ConversationHandler(
         entry_points=[
             CommandHandler("start", conversations.start_handler),
             MessageHandler(
@@ -57,13 +57,13 @@ def run():
         fallbacks=[
             MessageHandler(filters.TEXT, conversations.start_handler),
         ],
-        name="main_conv",
+        name="user_conv",
         persistent=True
     )
 
     app.add_handlers([
         CommandHandler("start", conversations.start_handler),
-        main_conv,
+        user_conv,
     ])
 
     # Errors
