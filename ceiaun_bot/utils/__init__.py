@@ -1,7 +1,7 @@
 from unidecode import unidecode
 
 import settings
-from messages import messages
+from bot import messages
 from .excel import create_new_sheet, write_data_to_sheet  # noqa
 
 

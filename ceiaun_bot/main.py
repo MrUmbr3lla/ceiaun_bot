@@ -9,7 +9,7 @@ from telegram.ext import (
 )
 
 import settings
-from messages import keyboards, messages
+from bot import keyboards, messages
 from utils import create_new_sheet, process_course_request
 
 logger = logging.getLogger(__name__)
