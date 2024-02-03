@@ -1,17 +1,34 @@
 import logging
-import os.path
 
 from telegram import Update
 from telegram.ext import (
-    Application, CommandHandler, ContextTypes, ConversationHandler, MessageHandler,
+    Application, CommandHandler, ContextTypes, MessageHandler,
     PersistenceInput, PicklePersistence, filters
 )
 
 import settings
-from bot import conversations, keyboards, states
-from utils import create_new_sheet
+from bot import conversations, states
 
 logger = logging.getLogger(__name__)
+
+CONVS = {
+    # User
+    states.HOME: conversations.home_handler,
+    states.REQUEST_COURSE: conversations.request_course_handler,
+    states.CONVERT_COURSE: conversations.convert_course_handler,
+
+    # Admin
+    states.ADMIN: conversations.admin_panel_handler,
+    states.ADMIN_GET_FILE: conversations.admin_send_file_handler
+}
+
+
+async def state_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_state = context.user_data.get("state", states.HOME)
+    logger.info(f"user {update.effective_user.id} state: {user_state}")
+    result = await CONVS[user_state](update, context)
+    context.user_data["state"] = result if result is not None else user_state
+    logger.info(f"user {update.effective_user.id} after state: {result}")
 
 
 async def error(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -29,41 +46,13 @@ def run():
 
     app = Application.builder().token(settings.BOT_TOKEN).persistence(persistence).build()
 
-    # Conversations
-    all_keyboards = (
-        f"^({keyboards.HOME_COURSE_REQUEST}|{keyboards.HOME_CONVERT_NAME}|{keyboards.HOME_CHART}|{keyboards.BACK})$"
-    )
-    user_conv = ConversationHandler(
-        entry_points=[
-            CommandHandler("start", conversations.start_handler),
-            MessageHandler(
-                filters.TEXT & filters.Regex(all_keyboards),
-                conversations.start_handler
-            )
-        ],
-        states={
-            states.HOME: [
-                MessageHandler(filters.TEXT, conversations.home_handler)
-            ],
-            states.REQUEST_COURSE: [
-                MessageHandler(filters.TEXT & ~filters.Regex(f"^{keyboards.BACK}$"),
-                               conversations.request_course_handler)
-            ],
-            states.CONVERT_COURSE: [
-                MessageHandler(filters.TEXT & ~filters.Regex(f"^{keyboards.BACK}$"),
-                               conversations.convert_course_handler)
-            ],
-        },
-        fallbacks=[
-            MessageHandler(filters.TEXT, conversations.start_handler),
-        ],
-        name="user_conv",
-        persistent=True
-    )
+    admin_filter = filters.User(user_id=int(settings.ADMIN_IDS[0]))
 
     app.add_handlers([
-        CommandHandler("start", conversations.start_handler),
-        user_conv,
+        CommandHandler("start", conversations.start_command_handler),
+        CommandHandler("panel", conversations.admin_start_command_handler, filters=admin_filter),
+
+        MessageHandler(filters.TEXT, state_handler)
     ])
 
     # Errors
@@ -73,8 +62,4 @@ def run():
 
 
 if __name__ == "__main__":
-    # TODO: Delete this
-    if not os.path.exists(settings.EXCEL_TEMP_FILE):
-        create_new_sheet("temp")
-
     run()

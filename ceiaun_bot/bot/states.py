@@ -1,4 +1,2 @@
-from telegram.ext import ConversationHandler
-
-HOME, REQUEST_COURSE, GET_CHARTS, CONVERT_COURSE = map(chr, range(4))
-END = ConversationHandler.END
+HOME, REQUEST_COURSE, CONVERT_COURSE = range(3)
+ADMIN, ADMIN_GET_FILE = range(3, 5)

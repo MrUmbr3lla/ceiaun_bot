@@ -1,27 +1,23 @@
 from openpyxl.reader.excel import load_workbook
+from openpyxl.workbook import Workbook
 from openpyxl.worksheet.worksheet import Worksheet
 
 import settings
 
 
-def create_new_sheet(title: str) -> str:
+def get_new_sheet(title: str) -> Workbook:
     """
-    Create new report from base excel template.
-
-    Return report file path.
+    Create new report from base excel template and return workbook.
     """
 
     workbook = load_workbook(filename=settings.EXCEL_BASE_TEMPLATE)
     sheet = workbook.active
     sheet["B1"] = title
 
-    file_path = settings.EXCEL_GENERATED_FILES_DIR / f"{title}.xlsx"
-    workbook.save(filename=file_path)
-
-    return file_path
+    return workbook
 
 
-def find_empty_row(sheet: Worksheet, start_row_number) -> int:
+def find_empty_row(sheet: Worksheet, start_row_number: int = 3) -> int:
     """
     Find empty row number and return it.
 
@@ -36,23 +32,28 @@ def find_empty_row(sheet: Worksheet, start_row_number) -> int:
         row_number += 1
 
 
-def write_data_to_sheet(file_path: str, data: list, columns: list, start_row_number: int = 3) -> None:
+def write_data_to_sheet(title: str, data: list[list], columns: list) -> str:
     """
-    Write one row data to first emprty row of sheet.
+    Write data from first empty row of sheet and return file path.
 
     Example:
-         >>> write_data_to_sheet("example.xlsx", ["data-1", "data-2"], ["A", "B"])
-         None
+         >>> write_data_to_sheet("example title", [["data-1-a", "data-1-b"], ["data-2-a", "data-2-b"]], ["A", "B"])
     """
 
-    workbook = load_workbook(filename=file_path)
+    workbook = get_new_sheet(title)
     sheet = workbook.active
-    row_number = find_empty_row(sheet, start_row_number)
+    row_number = find_empty_row(sheet)
 
-    for i, column in enumerate(columns):
-        try:
-            sheet[f"{column}{row_number}"] = data[i]
-        except IndexError:
-            pass
+    for d in data:
+        for i, column in enumerate(columns):
+            try:
+                sheet[f"{column}{row_number}"] = d[i]
+            except IndexError:
+                pass
 
+        row_number += 1
+
+    file_path = settings.EXCEL_GENERATED_FILES_DIR / f"{title}.xlsx"
     workbook.save(filename=file_path)
+
+    return file_path
