@@ -9,6 +9,7 @@ from bot.context import CustomContext
 from utils import process_course_request
 
 logger = logging.getLogger(__name__)
+request_logger = logging.getLogger("request_log")
 
 
 async def start_command_handler(update: Update, context: CustomContext):
@@ -142,7 +143,7 @@ async def request_course_handler(update: Update, context: CustomContext):
 
     user_id = update.effective_user.id
     username = update.effective_user.username
-    logger.info(f"user {user_id} with username @{username} has request: {request_list}")
+    request_logger.info(f"user {user_id} with username @{username} has request: {','.join(request_list)}")
 
     context.request_list.append(request_list)
 

@@ -22,6 +22,10 @@ LOGGING = {
             "format": "%(asctime)s [%(levelname)s] %(name)s - %(funcName)s(): %(message)s",
             "datefmt": "%Y-%m-%d %H:%M:%S",
         },
+        "none": {
+            "format": "%(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+        },
     },
     "handlers": {
         "console": {
@@ -37,10 +41,23 @@ LOGGING = {
             "backupCount": 5,
             "formatter": "standard",
         },
+        "log_request": {
+            "level": "INFO",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": "logs/requests.log",
+            "maxBytes": 1024 * 1024 * 10,  # 10 MB
+            "backupCount": 5,
+            "formatter": "none",
+        },
     },
     "loggers": {
         "": {
             "handlers": ["console", "log_file"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "request_log": {
+            "handlers": ["console", "log_request"],
             "level": "INFO",
             "propagate": False,
         },
