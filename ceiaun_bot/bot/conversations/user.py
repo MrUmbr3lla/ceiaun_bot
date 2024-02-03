@@ -2,19 +2,16 @@ import logging
 
 from telegram import InputMediaDocument, Update
 from telegram.constants import ParseMode
-from telegram.ext import ContextTypes
 
 import settings
 from bot import keyboards, messages, states
-from bot.database import save_course_request, save_user
+from bot.context import CustomContext
 from utils import process_course_request
 
 logger = logging.getLogger(__name__)
 
 
-async def start_command_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    save_user(context, update.effective_user)
-
+async def start_command_handler(update: Update, context: CustomContext):
     await update.message.reply_document(
         quote=True,
         document=settings.FILE_HOME_IMAGE,
@@ -22,10 +19,10 @@ async def start_command_handler(update: Update, context: ContextTypes.DEFAULT_TY
         caption=messages.START_COMMAND,
     )
 
-    context.user_data["state"] = states.HOME
+    context.user_state = states.HOME
 
 
-async def back_home(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def back_home(update: Update, context: CustomContext):
     await update.message.reply_text(
         text=messages.HOME_SHORT,
         quote=True,
@@ -35,7 +32,7 @@ async def back_home(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return states.HOME
 
 
-async def home_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def home_handler(update: Update, context: CustomContext):
     text = update.message.text
 
     # sending courses_list
@@ -96,10 +93,8 @@ async def home_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         return states.REQUEST_COURSE
 
-    return states.HOME
 
-
-async def convert_course_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def convert_course_handler(update: Update, context: CustomContext):
     REPLACE = (
         (" ", "%"),
         ("ی", "%"),
@@ -129,7 +124,7 @@ async def convert_course_handler(update: Update, context: ContextTypes.DEFAULT_T
     )
 
 
-async def request_course_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def request_course_handler(update: Update, context: CustomContext):
     text = update.message.text
 
     if text == keyboards.BACK:
@@ -149,8 +144,7 @@ async def request_course_handler(update: Update, context: ContextTypes.DEFAULT_T
     username = update.effective_user.username
     logger.info(f"user {user_id} with username @{username} has request: {request_list}")
 
-    save_course_request(context, request_list)
-    logger.info(f"bot data: {context.bot_data}")
+    context.request_list.append(request_list)
 
     await update.message.reply_text(
         text=messages.REQUEST_RECEIVED_REQUEST,

@@ -3,11 +3,12 @@ import logging
 from telegram import Update
 from telegram.ext import (
     Application, CommandHandler, ContextTypes, MessageHandler,
-    PersistenceInput, PicklePersistence, filters
+    PersistenceInput, PicklePersistence, TypeHandler, filters
 )
 
 import settings
 from bot import conversations, states
+from bot.context import CustomContext
 
 logger = logging.getLogger(__name__)
 
@@ -23,15 +24,31 @@ CONVS = {
 }
 
 
-async def state_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_state = context.user_data.get("state", states.HOME)
+async def state_handler(update: Update, context: CustomContext):
+    user_state = context.user_state
+
+    # TODO: Delete this
     logger.info(f"user {update.effective_user.id} state: {user_state}")
+
     result = await CONVS[user_state](update, context)
-    context.user_data["state"] = result if result is not None else user_state
-    logger.info(f"user {update.effective_user.id} after state: {result}")
+    context.user_state = result
+
+    # TODO: Delete this
+    logger.info(f"user {update.effective_user.id} with result: {result} -> state: {context.user_state}")
 
 
-async def error(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def track_users(update: Update, context: CustomContext) -> None:
+    """Store the user id of the incoming update, if any."""
+    if update.effective_user and update.effective_user.id not in context.bot_user_ids:
+        user_id = update.effective_user.id
+        username = update.effective_user.username
+        user_full_name = update.effective_user.full_name
+
+        context.bot_user_ids.add(user_id)
+        logger.info(f"New user: {user_id} / username: @{username} / full name: {user_full_name}")
+
+
+async def error(update: Update, context: CustomContext):
     logger.warning(f"Error for update {update} caused error {context.error}")
 
 
@@ -44,10 +61,12 @@ def run():
         update_interval=settings.BOT_DATABASE_UPDATE_INTERVAL
     )
 
-    app = Application.builder().token(settings.BOT_TOKEN).persistence(persistence).build()
+    context_types = ContextTypes(context=CustomContext)
+    app = Application.builder().token(settings.BOT_TOKEN).context_types(context_types).persistence(persistence).build()
 
-    admin_filter = filters.User(user_id=int(settings.ADMIN_IDS[0]))
+    admin_filter = filters.User(user_id=settings.ADMIN_IDS)
 
+    app.add_handler(TypeHandler(Update, track_users), group=-1)
     app.add_handlers([
         CommandHandler("start", conversations.start_command_handler),
         CommandHandler("panel", conversations.admin_start_command_handler, filters=admin_filter),
