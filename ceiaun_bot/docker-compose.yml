@@ -1,0 +1,13 @@
+version: '3.8'
+
+name: ceiaun_bot
+
+services:
+  bot:
+    build: .
+    command: python main.py
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    restart: always

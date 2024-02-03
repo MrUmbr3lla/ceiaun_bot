@@ -5,7 +5,9 @@ __pycache__
 botenv
 venv
 .env
+.env.prod
 
 generated_files
 logs
 */data/bot
+transfer.sh
