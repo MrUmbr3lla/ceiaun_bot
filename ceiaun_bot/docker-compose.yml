@@ -10,4 +10,4 @@ services:
       - .:/app
     env_file:
       - .env
-    restart: on-failure
+    restart: always
