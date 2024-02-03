@@ -1,20 +1,54 @@
 import logging
-import os.path
 
 from telegram import Update
 from telegram.ext import (
-    Application, CommandHandler, ContextTypes, ConversationHandler, MessageHandler,
-    PersistenceInput, PicklePersistence, filters
+    Application, CommandHandler, ContextTypes, MessageHandler,
+    PersistenceInput, PicklePersistence, TypeHandler, filters
 )
 
 import settings
-from bot import conversations, keyboards, states
-from utils import create_new_sheet
+from bot import conversations, states
+from bot.context import CustomContext
 
 logger = logging.getLogger(__name__)
 
+CONVS = {
+    # User
+    states.HOME: conversations.home_handler,
+    states.REQUEST_COURSE: conversations.request_course_handler,
+    states.CONVERT_COURSE: conversations.convert_course_handler,
 
-async def error(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # Admin
+    states.ADMIN: conversations.admin_panel_handler,
+    states.ADMIN_GET_FILE: conversations.admin_send_file_handler
+}
+
+
+async def state_handler(update: Update, context: CustomContext):
+    user_state = context.user_state
+
+    # TODO: Delete this
+    logger.info(f"user {update.effective_user.id} state: {user_state}")
+
+    result = await CONVS[user_state](update, context)
+    context.user_state = result
+
+    # TODO: Delete this
+    logger.info(f"user {update.effective_user.id} with result: {result} -> state: {context.user_state}")
+
+
+async def track_users(update: Update, context: CustomContext) -> None:
+    """Store the user id of the incoming update, if any."""
+    if update.effective_user and update.effective_user.id not in context.bot_user_ids:
+        user_id = update.effective_user.id
+        username = update.effective_user.username
+        user_full_name = update.effective_user.full_name
+
+        context.bot_user_ids.add(user_id)
+        logger.info(f"New user: {user_id} / username: @{username} / full name: {user_full_name}")
+
+
+async def error(update: Update, context: CustomContext):
     logger.warning(f"Error for update {update} caused error {context.error}")
 
 
@@ -27,43 +61,17 @@ def run():
         update_interval=settings.BOT_DATABASE_UPDATE_INTERVAL
     )
 
-    app = Application.builder().token(settings.BOT_TOKEN).persistence(persistence).build()
+    context_types = ContextTypes(context=CustomContext)
+    app = Application.builder().token(settings.BOT_TOKEN).context_types(context_types).persistence(persistence).build()
 
-    # Conversations
-    all_keyboards = (
-        f"^({keyboards.HOME_COURSE_REQUEST}|{keyboards.HOME_CONVERT_NAME}|{keyboards.HOME_CHART}|{keyboards.BACK})$"
-    )
-    main_conv = ConversationHandler(
-        entry_points=[
-            CommandHandler("start", conversations.start_handler),
-            MessageHandler(
-                filters.TEXT & filters.Regex(all_keyboards),
-                conversations.start_handler
-            )
-        ],
-        states={
-            states.HOME: [
-                MessageHandler(filters.TEXT, conversations.home_handler)
-            ],
-            states.REQUEST_COURSE: [
-                MessageHandler(filters.TEXT & ~filters.Regex(f"^{keyboards.BACK}$"),
-                               conversations.request_course_handler)
-            ],
-            states.CONVERT_COURSE: [
-                MessageHandler(filters.TEXT & ~filters.Regex(f"^{keyboards.BACK}$"),
-                               conversations.convert_course_handler)
-            ],
-        },
-        fallbacks=[
-            MessageHandler(filters.TEXT, conversations.start_handler),
-        ],
-        name="main_conv",
-        persistent=True
-    )
+    admin_filter = filters.User(user_id=settings.ADMIN_IDS)
 
+    app.add_handler(TypeHandler(Update, track_users), group=-1)
     app.add_handlers([
-        CommandHandler("start", conversations.start_handler),
-        main_conv,
+        CommandHandler("start", conversations.start_command_handler),
+        CommandHandler("panel", conversations.admin_start_command_handler, filters=admin_filter),
+
+        MessageHandler(filters.TEXT, state_handler)
     ])
 
     # Errors
@@ -73,8 +81,4 @@ def run():
 
 
 if __name__ == "__main__":
-    # TODO: Delete this
-    if not os.path.exists(settings.EXCEL_TEMP_FILE):
-        create_new_sheet("temp")
-
     run()
