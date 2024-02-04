@@ -31,15 +31,19 @@ def clean_data(data: str, has_number: list = None) -> list[str]:
     return cleaned_data
 
 
+def remove_special_characters(text: str) -> str:
+    return "".join(e for e in text if e.isalnum())
+
+
 def process_course_request(text: str) -> list:
     user_text = text.split("+")
     if len(user_text) != 4:
         raise ValueError(messages.REQUEST_INCORRECT_LENGTH)
 
-    student_name = user_text[0].strip()
-    student_id = str(unidecode(user_text[1].strip()))
-    student_course = user_text[2].strip()
-    student_course_id = str(unidecode(user_text[3].strip()))
+    student_name = remove_special_characters(user_text[0].strip())
+    student_id = remove_special_characters(unidecode(user_text[1]))
+    student_course = remove_special_characters(user_text[2].strip())
+    student_course_id = remove_special_characters(unidecode(user_text[3].strip()))
 
     if student_name.isnumeric():
         raise ValueError(messages.REQUEST_INCORRECT_USERNAME)
