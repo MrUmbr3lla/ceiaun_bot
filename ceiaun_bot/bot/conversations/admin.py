@@ -3,7 +3,7 @@ import logging
 from telegram import Update
 
 import settings
-from bot import keyboards, messages, states
+from bot import keyboards, messages, consts
 from bot.context import CustomContext
 from utils import write_data_to_sheet
 
@@ -17,7 +17,7 @@ async def admin_start_command_handler(update: Update, context: CustomContext):
         quote=True,
     )
 
-    context.user_data["state"] = states.ADMIN
+    context.user_data["state"] = consts.STATE_ADMIN
 
 
 async def back_admin(update: Update, context: CustomContext):
@@ -27,12 +27,12 @@ async def back_admin(update: Update, context: CustomContext):
         reply_markup=keyboards.ADMIN_KEYBOARD,
     )
 
-    return states.ADMIN
+    return consts.STATE_ADMIN
 
 
 async def admin_panel_handler(update: Update, context: CustomContext):
     if update.effective_user.id not in settings.ADMIN_IDS:
-        return states.HOME
+        return consts.STATE_HOME
 
     text = update.message.text
 
@@ -43,7 +43,7 @@ async def admin_panel_handler(update: Update, context: CustomContext):
             quote=True,
         )
 
-        return states.ADMIN
+        return consts.STATE_ADMIN
 
     if text == keyboards.ADMIN_GET_FILE:
         await update.message.reply_text(
@@ -52,12 +52,12 @@ async def admin_panel_handler(update: Update, context: CustomContext):
             quote=True
         )
 
-        return states.ADMIN_GET_FILE
+        return consts.STATE_ADMIN_GET_FILE
 
 
 async def admin_send_file_handler(update: Update, context: CustomContext):
     if update.effective_user.id not in settings.ADMIN_IDS:
-        return states.HOME
+        return consts.STATE_HOME
 
     text = update.message.text
     if text == keyboards.BACK:
@@ -78,4 +78,4 @@ async def admin_send_file_handler(update: Update, context: CustomContext):
         quote=True,
     )
 
-    return states.ADMIN
+    return consts.STATE_ADMIN
