@@ -1,9 +1,9 @@
 from telegram import KeyboardButton, ReplyKeyboardMarkup
 
 # Home
-HOME_COURSE_REQUEST = "درخواست افزایش ظرفیت"
-HOME_CONVERT_NAME = "ابزار تبدیل متن"
-HOME_CHART = "چارت دروس"
+HOME_COURSE_REQUEST = "درخواست افزایش ظرفیت 📮"
+HOME_CONVERT_NAME = "ابزار تبدیل متن 🔃"
+HOME_CHART = "چارت دروس 📚"
 
 HOME_KEYBOARD = ReplyKeyboardMarkup(
     [
@@ -19,7 +19,7 @@ HOME_KEYBOARD = ReplyKeyboardMarkup(
 )
 
 # Back
-BACK = "برگشت"
+BACK = "برگشت 🔙"
 
 BACK_KEYBOARD = ReplyKeyboardMarkup(
     [
@@ -32,8 +32,8 @@ BACK_KEYBOARD = ReplyKeyboardMarkup(
 )
 
 # Admin
-ADMIN_STAT = "آمار کاربران"
-ADMIN_GET_FILE = "دریافت فایل اکسل"
+ADMIN_STAT = "آمار کاربران 📝"
+ADMIN_GET_FILE = "دریافت فایل اکسل 📤"
 
 ADMIN_KEYBOARD = ReplyKeyboardMarkup(
     [

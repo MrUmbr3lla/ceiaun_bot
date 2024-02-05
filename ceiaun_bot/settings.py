@@ -49,6 +49,14 @@ LOGGING = {
             "backupCount": 5,
             "formatter": "none",
         },
+        "log_bad_request": {
+            "level": "INFO",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": "logs/bad_requests.log",
+            "maxBytes": 1024 * 1024 * 10,  # 10 MB
+            "backupCount": 10,
+            "formatter": "none",
+        },
     },
     "loggers": {
         "": {
@@ -58,6 +66,11 @@ LOGGING = {
         },
         "request_log": {
             "handlers": ["console", "log_request"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "bad_request_log": {
+            "handlers": ["console", "log_bad_request"],
             "level": "INFO",
             "propagate": False,
         },
