@@ -1,10 +1,9 @@
 import logging
 
 from telegram import InputMediaDocument, Update
-from telegram.constants import ParseMode
 
 import settings
-from bot import keyboards, messages, states
+from bot import consts, keyboards, messages
 from bot.context import CustomContext
 from utils import process_course_request
 
@@ -20,7 +19,7 @@ async def start_command_handler(update: Update, context: CustomContext):
         caption=messages.START_COMMAND,
     )
 
-    context.user_state = states.HOME
+    context.user_state = consts.STATE_HOME
 
 
 async def back_home(update: Update, context: CustomContext):
@@ -30,7 +29,7 @@ async def back_home(update: Update, context: CustomContext):
         reply_markup=keyboards.HOME_KEYBOARD,
     )
 
-    return states.HOME
+    return consts.STATE_HOME
 
 
 async def home_handler(update: Update, context: CustomContext):
@@ -45,8 +44,7 @@ async def home_handler(update: Update, context: CustomContext):
                 InputMediaDocument(settings.FILE_SE_CHARTS[0]),
                 InputMediaDocument(
                     settings.FILE_SE_CHARTS[1],
-                    caption=messages.CHART_SE_CAPTION,
-                    parse_mode=ParseMode.HTML
+                    caption=messages.CHART_SE_CAPTION
                 )
             ],
         )
@@ -57,8 +55,7 @@ async def home_handler(update: Update, context: CustomContext):
                 InputMediaDocument(settings.FILE_IT_CHARTS[0]),
                 InputMediaDocument(
                     settings.FILE_IT_CHARTS[1],
-                    caption=messages.CHART_IT_CAPTION,
-                    parse_mode=ParseMode.HTML,
+                    caption=messages.CHART_IT_CAPTION
                 )
             ],
         )
@@ -66,11 +63,10 @@ async def home_handler(update: Update, context: CustomContext):
         await update.message.reply_text(
             quote=True,
             text=messages.CHART_SELECT_ORIENT,
-            parse_mode=ParseMode.HTML,
             reply_markup=keyboards.HOME_KEYBOARD
         )
 
-        return states.HOME
+        return consts.STATE_HOME
 
     # converting courses name
     if text == keyboards.HOME_CONVERT_NAME:
@@ -81,7 +77,7 @@ async def home_handler(update: Update, context: CustomContext):
             quote=True
         )
 
-        return states.CONVERT_COURSE
+        return consts.STATE_CONVERT_COURSE
 
     # students requests
     if text == keyboards.HOME_COURSE_REQUEST:
@@ -92,25 +88,17 @@ async def home_handler(update: Update, context: CustomContext):
             quote=True
         )
 
-        return states.REQUEST_COURSE
+        return consts.STATE_REQUEST_COURSE
 
 
 async def convert_course_handler(update: Update, context: CustomContext):
-    REPLACE = (
-        (" ", "%"),
-        ("ی", "%"),
-        ("ک", "%"),
-        ("ي", "%"),
-        ("ك", "%"),
-    )
-
     text = update.message.text
 
     if text == keyboards.BACK:
         return await back_home(update, context)
 
     converted_name = text
-    for r in REPLACE:
+    for r in consts.PERCENT_REPLACE:
         converted_name = converted_name.replace(*r)
 
     result = ""
@@ -119,7 +107,6 @@ async def convert_course_handler(update: Update, context: CustomContext):
 
     await update.message.reply_text(
         text=messages.CONVERT_NAME_RESULT.format(result=result),
-        parse_mode=ParseMode.HTML,
         quote=True,
         reply_markup=keyboards.BACK_KEYBOARD
     )

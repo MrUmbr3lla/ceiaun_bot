@@ -1,26 +1,27 @@
 import logging
 
 from telegram import Update
+from telegram.constants import ParseMode
 from telegram.ext import (
-    Application, CommandHandler, ContextTypes, MessageHandler,
+    Application, CommandHandler, ContextTypes, Defaults, MessageHandler,
     PersistenceInput, PicklePersistence, TypeHandler, filters
 )
 
 import settings
-from bot import conversations, states
+from bot import consts, conversations
 from bot.context import CustomContext
 
 logger = logging.getLogger(__name__)
 
 CONVS = {
     # User
-    states.HOME: conversations.home_handler,
-    states.REQUEST_COURSE: conversations.request_course_handler,
-    states.CONVERT_COURSE: conversations.convert_course_handler,
+    consts.STATE_HOME: conversations.home_handler,
+    consts.STATE_REQUEST_COURSE: conversations.request_course_handler,
+    consts.STATE_CONVERT_COURSE: conversations.convert_course_handler,
 
     # Admin
-    states.ADMIN: conversations.admin_panel_handler,
-    states.ADMIN_GET_FILE: conversations.admin_send_file_handler
+    consts.STATE_ADMIN: conversations.admin_panel_handler,
+    consts.STATE_ADMIN_GET_FILE: conversations.admin_send_file_handler
 }
 
 
@@ -61,8 +62,18 @@ def run():
         update_interval=settings.BOT_DATABASE_UPDATE_INTERVAL
     )
 
+    # Default
+    defaults = Defaults(parse_mode=ParseMode.HTML, disable_web_page_preview=True)
+
     context_types = ContextTypes(context=CustomContext)
-    app = Application.builder().token(settings.BOT_TOKEN).context_types(context_types).persistence(persistence).build()
+    app = (
+        Application.builder()
+        .token(settings.BOT_TOKEN)
+        .defaults(defaults)
+        .context_types(context_types)
+        .persistence(persistence)
+        .build()
+    )
 
     admin_filter = filters.User(user_id=settings.ADMIN_IDS)
 
