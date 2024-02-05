@@ -3,7 +3,7 @@ import logging
 from telegram import Update
 from telegram.constants import ParseMode
 from telegram.ext import (
-    Application, CommandHandler, ContextTypes, Defaults, MessageHandler,
+    AIORateLimiter, Application, CommandHandler, ContextTypes, Defaults, MessageHandler,
     PersistenceInput, PicklePersistence, TypeHandler, filters
 )
 
@@ -69,6 +69,7 @@ def run():
         .token(settings.BOT_TOKEN)
         .defaults(defaults)
         .context_types(context_types)
+        .rate_limiter(AIORateLimiter())
         .persistence(persistence)
         .build()
     )
