@@ -21,7 +21,13 @@ CONVS = {
 
     # Admin
     consts.STATE_ADMIN: conversations.admin_panel_handler,
-    consts.STATE_ADMIN_GET_FILE: conversations.admin_send_file_handler
+    consts.STATE_ADMIN_GET_FILE: conversations.admin_send_file_handler,
+    consts.STATE_ADMIN_FILE_ID: conversations.admin_send_file_id_handler,
+}
+
+CONVS_DOC = {
+    # Admin
+    consts.STATE_ADMIN_FILE_ID: conversations.admin_send_file_id_handler,
 }
 
 
@@ -34,6 +40,13 @@ async def state_handler(update: Update, context: CustomContext):
     context.user_state = result
 
     # logger.info(f"user {update.effective_user.id} with result: {result} -> state: {context.user_state}")
+
+
+async def document_state_handler(update: Update, context: CustomContext):
+    user_state = context.user_state
+
+    result = await CONVS_DOC[user_state](update, context)
+    context.user_state = result
 
 
 async def track_users(update: Update, context: CustomContext) -> None:
@@ -81,7 +94,8 @@ def run():
         CommandHandler("start", conversations.start_command_handler),
         CommandHandler("panel", conversations.admin_start_command_handler, filters=admin_filter),
 
-        MessageHandler(filters.TEXT, state_handler)
+        MessageHandler(filters.TEXT, state_handler),
+        MessageHandler(filters.Document.ALL, document_state_handler),
     ])
 
     # Errors
