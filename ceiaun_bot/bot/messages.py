@@ -30,13 +30,16 @@ REQUEST_INCORRECT_LENGTH = """❌ لطفا درخواست خود را طبق ف�
 
 # Student name
 REQUEST_INCORRECT_USERNAME = "❗️ لطفا نام و نام خانوادگی خود را به درستی وارد کنید و درخواست خود را مجدد ارسال نمایید "
+REQUEST_INCORRECT_USERNAME_NONE = "❗️لطفا قسمت نام و نام خانوادگی خود را تکمیل کرده و درخواست خود را مجدد ارسال نمایید"
 
 # Student id
 REQUEST_INCORRECT_STUDENT_ID = "❗️ لطفا شماره دانشجویی خود را به درستی وارد کنید و درخواست خود را مجدد ارسال نمایید "
 REQUEST_INCORRECT_STUDENT_ID_CODE_MELLI = "❗️ لطفا شماره دانشجویی خود را وارد کنید و درخواست خود را مجدد ارسال نمایید. کد ملی مورد قبول نمی‌باشد."
+REQUEST_INCORRECT_STUDENT_ID_NONE = "❗️لطفا قسمت شماره دانشجویی خود تکمیل کرده و درخواست خود را مجدد ارسال نمایید."
 
 # Course name
 REQUEST_INCORRECT_COURSE = "❗️ لطفا نام درس را به درستی وارد کنید و درخواست خود را مجدد ارسال نمایید "
+REQUEST_INCORRECT_COURSE_NONE = "❗️لطفا قسمت نام درس را تکمیل کرده و درخواست خود را مجدد ارسال نمایید"
 REQUEST_INCORRECT_COURSE_OTHER_DEPARTMENT = """❗️لطفا تنها درخواست خود را برای دروس تخصصی کامپیوتر ارسال کنید.
 
 🔹دروس فیزیک : دکتر دائی
@@ -49,6 +52,7 @@ REQUEST_INCORRECT_COURSE_OTHER_DEPARTMENT = """❗️لطفا تنها درخو�
 
 # Course id
 REQUEST_INCORRECT_COURSE_ID = "❗️ لطفا کد ارائه درس را به درستی وارد کنید و درخواست خود را مجدد ارسال نمایید "
+REQUEST_INCORRECT_COURSE_ID_NONE = "❗️لطفا قسمت کد ارائه درس را تکمیل کرده و درخواست خود را مجدد ارسال نمایید"
 REQUEST_INCORRECT_COURSE_ID_INSTEAD = """❗️لطفا کد ارائه درس را به درستی وارد کنید و درخواست خود را مجدد ارسال نمایید.
 
 💡کد درس با کد ارائه درس متفاوت است، لطفا کد ارائه درس را ارسال نمایید."""

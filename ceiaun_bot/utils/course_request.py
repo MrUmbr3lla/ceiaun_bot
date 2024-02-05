@@ -34,11 +34,17 @@ def process_course_request(text: str) -> list:
 
 
 def clean_student_name(name: str) -> None:
+    if name == "":
+        raise ValueError(messages.REQUEST_INCORRECT_USERNAME_NONE)
+
     if name.isnumeric():
         raise ValueError(messages.REQUEST_INCORRECT_USERNAME)
 
 
 def clean_student_id(student_id):
+    if student_id == "":
+        raise ValueError(messages.REQUEST_INCORRECT_STUDENT_ID_NONE)
+
     if not student_id.isnumeric():
         raise ValueError(messages.REQUEST_INCORRECT_STUDENT_ID)
 
@@ -50,6 +56,9 @@ def clean_student_id(student_id):
 
 
 def clean_course_name(course_name):
+    if course_name == "":
+        raise ValueError(messages.REQUEST_INCORRECT_COURSE_NONE)
+
     if course_name.isnumeric():
         raise ValueError(messages.REQUEST_INCORRECT_COURSE)
 
@@ -58,6 +67,9 @@ def clean_course_name(course_name):
 
 
 def clean_course_id(course_id):
+    if course_id == "":
+        raise ValueError(messages.REQUEST_INCORRECT_COURSE_ID_NONE)
+
     if not course_id.isnumeric():
         raise ValueError(messages.REQUEST_INCORRECT_COURSE_ID)
 
