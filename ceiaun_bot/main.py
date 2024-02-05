@@ -28,14 +28,12 @@ CONVS = {
 async def state_handler(update: Update, context: CustomContext):
     user_state = context.user_state
 
-    # TODO: Delete this
-    logger.info(f"user {update.effective_user.id} state: {user_state}")
+    # logger.info(f"user {update.effective_user.id} state: {user_state}")
 
     result = await CONVS[user_state](update, context)
     context.user_state = result
 
-    # TODO: Delete this
-    logger.info(f"user {update.effective_user.id} with result: {result} -> state: {context.user_state}")
+    # logger.info(f"user {update.effective_user.id} with result: {result} -> state: {context.user_state}")
 
 
 async def track_users(update: Update, context: CustomContext) -> None:

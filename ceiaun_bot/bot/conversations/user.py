@@ -9,6 +9,7 @@ from utils import process_course_request
 
 logger = logging.getLogger(__name__)
 request_logger = logging.getLogger("request_log")
+bad_request_logger = logging.getLogger("bad_request_log")
 
 
 async def start_command_handler(update: Update, context: CustomContext):
@@ -83,7 +84,7 @@ async def home_handler(update: Update, context: CustomContext):
     if text == keyboards.HOME_COURSE_REQUEST:
         await update.message.reply_document(
             document=settings.FILE_COURSE_REQUEST,
-            caption=messages.REQUEST_COMMAND,
+            caption=messages.REQ_COMMAND,
             reply_markup=keyboards.BACK_KEYBOARD,
             quote=True
         )
@@ -114,6 +115,8 @@ async def convert_course_handler(update: Update, context: CustomContext):
 
 async def request_course_handler(update: Update, context: CustomContext):
     text = update.message.text
+    user_id = update.effective_user.id
+    username = update.effective_user.username
 
     if text == keyboards.BACK:
         return await back_home(update, context)
@@ -122,20 +125,18 @@ async def request_course_handler(update: Update, context: CustomContext):
         request_list = process_course_request(text)
     except ValueError as e:
         await update.message.reply_text(
-            text=str(e),
+            text=e.args[0],
             reply_markup=keyboards.BACK_KEYBOARD,
             quote=True
         )
+        bad_request_logger.info(f"user {user_id} with username @{username} has bad request with id {e.args[1]}: {text}")
         return None
 
-    user_id = update.effective_user.id
-    username = update.effective_user.username
     request_logger.info(f"user {user_id} with username @{username} has request: {','.join(request_list)}")
-
     context.request_list.append(request_list)
 
     await update.message.reply_text(
-        text=messages.REQUEST_RECEIVED_REQUEST,
+        text=messages.REQ_RECEIVED_REQ,
         reply_markup=keyboards.BACK_KEYBOARD,
         quote=True
     )
