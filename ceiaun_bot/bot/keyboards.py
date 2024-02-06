@@ -34,12 +34,16 @@ BACK_KEYBOARD = ReplyKeyboardMarkup(
 # Admin
 ADMIN_STAT = "آمار کاربران 📝"
 ADMIN_GET_FILE = "دریافت فایل اکسل 📤"
+ADMIN_GET_FILE_ID = "دریافت آیدی فایل"
 
 ADMIN_KEYBOARD = ReplyKeyboardMarkup(
     [
         [
             KeyboardButton(ADMIN_STAT), KeyboardButton(ADMIN_GET_FILE)
-        ]
+        ],
+        [
+            KeyboardButton(ADMIN_GET_FILE_ID)
+        ],
     ],
     resize_keyboard=True,
     one_time_keyboard=True
