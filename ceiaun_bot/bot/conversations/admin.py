@@ -83,6 +83,15 @@ async def admin_panel_handler(update: Update, context: CustomContext):
 
         return consts.STATE_ADMIN_CLEAN_REQ
 
+    if text == keyboards.ADMIN_SEND_MESSAGE:
+        await update.message.reply_text(
+            text=messages.ADMIN_SEND_MSG_GET,
+            reply_markup=keyboards.BACK_KEYBOARD,
+            quote=True
+        )
+
+        return consts.STATE_ADMIN_SEND_MSG
+
 
 async def admin_send_file_handler(update: Update, context: CustomContext):
     if update.effective_user.id not in settings.ADMIN_IDS:
@@ -158,6 +167,41 @@ async def admin_clean_request_list_handler(update: Update, context: CustomContex
 
     await update.message.reply_text(
         text=messages.ADMIN_HOME,
+        reply_markup=keyboards.ADMIN_KEYBOARD,
+        quote=True,
+    )
+
+    return consts.STATE_ADMIN
+
+
+async def admin_send_message_handler(update: Update, context: CustomContext):
+    if update.effective_user.id not in settings.ADMIN_IDS:
+        return consts.STATE_HOME
+
+    text = update.message.text
+    if text == keyboards.BACK:
+        return await back_admin(update, context)
+
+    try:
+        text_split = text.split("\n")
+        for_user_id = int(text_split[0])
+        for_user_message = "\n".join(text_split[1:])
+
+        result = await context.bot.send_message(
+            chat_id=for_user_id,
+            text=messages.ADMIN_SEND_MSG_TEMPLATE.format(message=for_user_message)
+        )
+        result_message = messages.ADMIN_SEND_MSG_SUCCESS.format(
+            user=f"<a href='tg://user?id={for_user_id}'>{for_user_id}</a>",
+            message_id=result.id,
+            name=result.chat.full_name,
+            username=result.chat.username
+        )
+    except Exception as e:
+        result_message = str(e)
+
+    await update.message.reply_text(
+        text=result_message,
         reply_markup=keyboards.ADMIN_KEYBOARD,
         quote=True,
     )
