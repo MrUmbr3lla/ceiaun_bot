@@ -12,6 +12,10 @@ class CustomContext(CallbackContext[ExtBot, dict, dict, dict]):
     def request_list(self) -> list[list]:
         return self.bot_data.setdefault("request_list", [])
 
+    @request_list.setter
+    def request_list(self, value: list) -> None:
+        self.bot_data["request_list"] = value
+
     @property
     def file_last_index(self) -> int:
         return self.bot_data.setdefault("file_last_index", 0)

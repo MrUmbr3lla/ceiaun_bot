@@ -23,6 +23,7 @@ CONVS = {
     consts.STATE_ADMIN: conversations.admin_panel_handler,
     consts.STATE_ADMIN_GET_FILE: conversations.admin_send_file_handler,
     consts.STATE_ADMIN_FILE_ID: conversations.admin_send_file_id_handler,
+    consts.STATE_ADMIN_CLEAN_REQ: conversations.admin_clean_request_list_handler,
 }
 
 CONVS_DOC = {
@@ -101,7 +102,7 @@ def run():
     # Errors
     app.add_error_handler(error)
 
-    app.run_polling()
+    app.run_polling(allowed_updates=Update.MESSAGE)
 
 
 if __name__ == "__main__":

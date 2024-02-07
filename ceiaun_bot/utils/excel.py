@@ -32,12 +32,9 @@ def find_empty_row(sheet: Worksheet, start_row_number: int = 3) -> int:
         row_number += 1
 
 
-def write_data_to_sheet(title: str, data: list[list], columns: list) -> str:
+def write_data_to_sheet(file_name: str, title: str, data: list[list], columns: list) -> str:
     """
     Write data from first empty row of sheet and return file path.
-
-    Example:
-         >>> write_data_to_sheet("example title", [["data-1-a", "data-1-b"], ["data-2-a", "data-2-b"]], ["A", "B"])
     """
 
     workbook = get_new_sheet(title)
@@ -53,7 +50,7 @@ def write_data_to_sheet(title: str, data: list[list], columns: list) -> str:
 
         row_number += 1
 
-    file_path = settings.EXCEL_GENERATED_FILES_DIR / f"{title}.xlsx"
+    file_path = settings.EXCEL_GENERATED_FILES_DIR / f"{file_name}.xlsx"
     workbook.save(filename=file_path)
 
     return file_path
