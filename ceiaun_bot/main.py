@@ -102,7 +102,7 @@ def run():
     # Errors
     app.add_error_handler(error)
 
-    app.run_polling()
+    app.run_polling(allowed_updates=Update.MESSAGE)
 
 
 if __name__ == "__main__":
