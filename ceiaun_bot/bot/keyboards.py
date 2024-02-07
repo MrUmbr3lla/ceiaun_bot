@@ -32,17 +32,18 @@ BACK_KEYBOARD = ReplyKeyboardMarkup(
 )
 
 # Admin
-ADMIN_STAT = "آمار کاربران 📝"
-ADMIN_GET_FILE = "دریافت فایل اکسل 📤"
+ADMIN_STAT = "آمار 📝"
 ADMIN_GET_FILE_ID = "دریافت آیدی فایل"
+ADMIN_GET_FILE = "دریافت فایل اکسل 📤"
+ADMIN_CLEAN_REQUEST_LIST = "پاکسازی لیست درخواست ها"
 
 ADMIN_KEYBOARD = ReplyKeyboardMarkup(
     [
         [
-            KeyboardButton(ADMIN_STAT), KeyboardButton(ADMIN_GET_FILE)
+            KeyboardButton(ADMIN_STAT), KeyboardButton(ADMIN_GET_FILE_ID)
         ],
         [
-            KeyboardButton(ADMIN_GET_FILE_ID)
+            KeyboardButton(ADMIN_GET_FILE), KeyboardButton(ADMIN_CLEAN_REQUEST_LIST)
         ],
     ],
     resize_keyboard=True,
