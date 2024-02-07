@@ -24,6 +24,7 @@ CONVS = {
     consts.STATE_ADMIN_GET_FILE: conversations.admin_send_file_handler,
     consts.STATE_ADMIN_FILE_ID: conversations.admin_send_file_id_handler,
     consts.STATE_ADMIN_CLEAN_REQ: conversations.admin_clean_request_list_handler,
+    consts.STATE_ADMIN_SEND_MSG: conversations.admin_send_message_handler,
 }
 
 CONVS_DOC = {
