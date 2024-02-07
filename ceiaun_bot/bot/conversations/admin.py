@@ -76,6 +76,7 @@ async def admin_send_file_handler(update: Update, context: CustomContext):
     course_requests = context.request_list
     file_path = write_data_to_sheet(
         f"{text} ({first_index + 1}-{len(course_requests)})",
+        text,
         course_requests[first_index:],
         ["A", "B", "C", "D"]
     )
