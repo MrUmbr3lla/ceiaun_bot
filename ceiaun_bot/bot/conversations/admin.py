@@ -5,7 +5,7 @@ from telegram import Update
 import settings
 from bot import consts, keyboards, messages
 from bot.context import CustomContext
-from utils import write_data_to_sheet
+from utils import remove_duplicate_request, write_data_to_sheet
 
 logger = logging.getLogger(__name__)
 
@@ -106,7 +106,7 @@ async def admin_send_file_handler(update: Update, context: CustomContext):
     file_path = write_data_to_sheet(
         f"{text} ({first_index + 1}-{len(course_requests)})",
         text,
-        course_requests[first_index:],
+        remove_duplicate_request(course_requests[first_index:]),
         ["A", "B", "C", "D"]
     )
     context.file_last_index = len(course_requests)

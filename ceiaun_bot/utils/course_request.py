@@ -75,3 +75,15 @@ def clean_course_id(course_id):
 
     if len(course_id) == 10:
         raise ValueError(messages.REQ_ERROR_COURSE_ID_INSTEAD, "REQ_ERROR_COURSE_ID_INSTEAD")
+
+
+def remove_duplicate_request(request_list: list[list]) -> list[list]:
+    requests = {}
+    result = []
+    for req in request_list:
+        course_student = requests.setdefault(req[3], [])
+        if req[1] not in course_student:
+            course_student.append(req[1])
+            result.append(req)
+
+    return result
