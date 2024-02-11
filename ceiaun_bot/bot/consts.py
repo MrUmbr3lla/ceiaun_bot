@@ -34,5 +34,6 @@ COURSE_NAME_EXCLUDE = (
     "تمدن",
     "فارسی",
     "وصایا",
+    "دیفرانسیل",
 )
 COURSE_NAME_EXCLUDE_REGEX = re.compile(f".*({'|'.join(COURSE_NAME_EXCLUDE)}).*")
