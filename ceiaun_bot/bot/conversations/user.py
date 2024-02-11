@@ -126,7 +126,7 @@ async def request_course_handler(update: Update, context: CustomContext):
     user_id = update.effective_user.id
     username = update.effective_user.username
 
-    if text == keyboards.BACK:
+    if text == keyboards.BACK or settings.REQUEST_CLOSE:
         return await back_home(update, context)
 
     try:
