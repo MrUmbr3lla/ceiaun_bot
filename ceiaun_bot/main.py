@@ -103,6 +103,7 @@ def run():
     # Errors
     app.add_error_handler(error)
 
+    # TODO: Check edited message
     app.run_polling(allowed_updates=Update.MESSAGE)
 
 

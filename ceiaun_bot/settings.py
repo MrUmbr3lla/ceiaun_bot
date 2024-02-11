@@ -90,6 +90,7 @@ BOT_DATABASE_DIR = BASE_DIR / "data/bot"
 BOT_DATABASE_UPDATE_INTERVAL = config("BOT_DATABASE_UPDATE_INTERVAL", cast=int, default=60)
 ADMIN_IDS = [int(i) for i in config("ADMIN_IDS").split(",")]
 BACKUP_CH_ID = config("BACKUP_CH_ID")
+REQUEST_CLOSE = config("REQUEST_CLOSE", cast=bool, default=False)
 
 make_dir(BOT_DATABASE_DIR)
 
