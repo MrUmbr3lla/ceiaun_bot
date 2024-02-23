@@ -1,4 +1,4 @@
-# IAUN Compute Engineering Bot
+# IAUN Computer Engineering Bot
 
 ## Table of contents
 
