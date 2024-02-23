@@ -62,9 +62,9 @@ async def home_handler(update: Update, context: CustomContext):
         )
         # Send orient help
         await update.message.reply_text(
-            quote=True,
             text=messages.CHART_SELECT_ORIENT,
-            reply_markup=keyboards.HOME_KEYBOARD
+            reply_markup=keyboards.HOME_KEYBOARD,
+            quote=True
         )
 
         return consts.STATE_HOME
@@ -82,6 +82,14 @@ async def home_handler(update: Update, context: CustomContext):
 
     # students requests
     if text == keyboards.HOME_COURSE_REQUEST:
+        if settings.REQUEST_CLOSE:
+            await update.message.reply_text(
+                text=messages.REQ_CLOSE,
+                reply_markup=keyboards.HOME_KEYBOARD,
+                quote=True
+            )
+            return None
+
         await update.message.reply_document(
             document=settings.FILE_COURSE_REQUEST,
             caption=messages.REQ_COMMAND,
@@ -118,7 +126,7 @@ async def request_course_handler(update: Update, context: CustomContext):
     user_id = update.effective_user.id
     username = update.effective_user.username
 
-    if text == keyboards.BACK:
+    if text == keyboards.BACK or settings.REQUEST_CLOSE:
         return await back_home(update, context)
 
     try:
