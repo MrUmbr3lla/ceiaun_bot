@@ -1,40 +1,54 @@
 import logging
 
 from telegram import Update
+from telegram.constants import ParseMode
 from telegram.ext import (
-    Application, CommandHandler, ContextTypes, MessageHandler,
+    AIORateLimiter, Application, CommandHandler, ContextTypes, Defaults, MessageHandler,
     PersistenceInput, PicklePersistence, TypeHandler, filters
 )
 
 import settings
-from bot import conversations, states
+from bot import consts, conversations
 from bot.context import CustomContext
 
 logger = logging.getLogger(__name__)
 
 CONVS = {
     # User
-    states.HOME: conversations.home_handler,
-    states.REQUEST_COURSE: conversations.request_course_handler,
-    states.CONVERT_COURSE: conversations.convert_course_handler,
+    consts.STATE_HOME: conversations.home_handler,
+    consts.STATE_REQUEST_COURSE: conversations.request_course_handler,
+    consts.STATE_CONVERT_COURSE: conversations.convert_course_handler,
 
     # Admin
-    states.ADMIN: conversations.admin_panel_handler,
-    states.ADMIN_GET_FILE: conversations.admin_send_file_handler
+    consts.STATE_ADMIN: conversations.admin_panel_handler,
+    consts.STATE_ADMIN_GET_FILE: conversations.admin_send_file_handler,
+    consts.STATE_ADMIN_FILE_ID: conversations.admin_send_file_id_handler,
+    consts.STATE_ADMIN_CLEAN_REQ: conversations.admin_clean_request_list_handler,
+    consts.STATE_ADMIN_SEND_MSG: conversations.admin_send_message_handler,
+}
+
+CONVS_DOC = {
+    # Admin
+    consts.STATE_ADMIN_FILE_ID: conversations.admin_send_file_id_handler,
 }
 
 
 async def state_handler(update: Update, context: CustomContext):
     user_state = context.user_state
 
-    # TODO: Delete this
-    logger.info(f"user {update.effective_user.id} state: {user_state}")
+    # logger.info(f"user {update.effective_user.id} state: {user_state}")
 
     result = await CONVS[user_state](update, context)
     context.user_state = result
 
-    # TODO: Delete this
-    logger.info(f"user {update.effective_user.id} with result: {result} -> state: {context.user_state}")
+    # logger.info(f"user {update.effective_user.id} with result: {result} -> state: {context.user_state}")
+
+
+async def document_state_handler(update: Update, context: CustomContext):
+    user_state = context.user_state
+
+    result = await CONVS_DOC[user_state](update, context)
+    context.user_state = result
 
 
 async def track_users(update: Update, context: CustomContext) -> None:
@@ -61,8 +75,19 @@ def run():
         update_interval=settings.BOT_DATABASE_UPDATE_INTERVAL
     )
 
+    # Default
+    defaults = Defaults(parse_mode=ParseMode.HTML, disable_web_page_preview=True)
+
     context_types = ContextTypes(context=CustomContext)
-    app = Application.builder().token(settings.BOT_TOKEN).context_types(context_types).persistence(persistence).build()
+    app = (
+        Application.builder()
+        .token(settings.BOT_TOKEN)
+        .defaults(defaults)
+        .context_types(context_types)
+        .rate_limiter(AIORateLimiter())
+        .persistence(persistence)
+        .build()
+    )
 
     admin_filter = filters.User(user_id=settings.ADMIN_IDS)
 
@@ -71,13 +96,14 @@ def run():
         CommandHandler("start", conversations.start_command_handler),
         CommandHandler("panel", conversations.admin_start_command_handler, filters=admin_filter),
 
-        MessageHandler(filters.TEXT, state_handler)
+        MessageHandler(filters.TEXT, state_handler),
+        MessageHandler(filters.Document.ALL, document_state_handler),
     ])
 
     # Errors
     app.add_error_handler(error)
 
-    app.run_polling()
+    app.run_polling(allowed_updates=Update.MESSAGE)
 
 
 if __name__ == "__main__":

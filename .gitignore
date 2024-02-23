@@ -10,4 +10,6 @@ venv
 generated_files
 logs
 */data/bot
+
 transfer.sh
+logs.sh

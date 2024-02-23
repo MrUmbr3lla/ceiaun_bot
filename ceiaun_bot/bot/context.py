@@ -1,6 +1,6 @@
 from telegram.ext import CallbackContext, ExtBot
 
-from bot import states
+from bot import consts
 
 
 class CustomContext(CallbackContext[ExtBot, dict, dict, dict]):
@@ -12,6 +12,10 @@ class CustomContext(CallbackContext[ExtBot, dict, dict, dict]):
     def request_list(self) -> list[list]:
         return self.bot_data.setdefault("request_list", [])
 
+    @request_list.setter
+    def request_list(self, value: list) -> None:
+        self.bot_data["request_list"] = value
+
     @property
     def file_last_index(self) -> int:
         return self.bot_data.setdefault("file_last_index", 0)
@@ -22,7 +26,7 @@ class CustomContext(CallbackContext[ExtBot, dict, dict, dict]):
 
     @property
     def user_state(self) -> int:
-        return self.user_data.setdefault("state", states.HOME)
+        return self.user_data.setdefault("state", consts.STATE_HOME)
 
     @user_state.setter
     def user_state(self, value: int) -> None:
