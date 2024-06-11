@@ -4,16 +4,10 @@ from pathlib import Path
 
 from decouple import config
 
-
-def make_dir(path: Path) -> None:
-    if not os.path.exists(path):
-        os.makedirs(path)
-
-
 BASE_DIR = Path(__file__).resolve().parent
 
 # Logging
-make_dir(BASE_DIR / "logs")
+os.makedirs(BASE_DIR / "logs", exist_ok=True)
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -91,12 +85,12 @@ BOT_DATABASE_UPDATE_INTERVAL = config("BOT_DATABASE_UPDATE_INTERVAL", cast=int, 
 ADMIN_IDS = [int(i) for i in config("ADMIN_IDS").split(",")]
 BACKUP_CH_ID = config("BACKUP_CH_ID")
 
-make_dir(BOT_DATABASE_DIR)
+os.makedirs(BOT_DATABASE_DIR, exist_ok=True)
 
 # Excel files
 EXCEL_BASE_TEMPLATE = BASE_DIR / "data/base/report.xlsx"
 EXCEL_GENERATED_FILES_DIR = BASE_DIR / "data/generated_files"
-make_dir(EXCEL_GENERATED_FILES_DIR)
+os.makedirs(EXCEL_GENERATED_FILES_DIR, exist_ok=True)
 EXCEL_TEMP_FILE = EXCEL_GENERATED_FILES_DIR / "temp.xlsx"
 
 # File ids
