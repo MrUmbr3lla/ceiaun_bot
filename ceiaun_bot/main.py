@@ -3,8 +3,16 @@ import logging
 from telegram import Update
 from telegram.constants import ParseMode
 from telegram.ext import (
-    AIORateLimiter, Application, CommandHandler, ContextTypes, Defaults, MessageHandler,
-    PersistenceInput, PicklePersistence, TypeHandler, filters
+    AIORateLimiter,
+    Application,
+    CommandHandler,
+    ContextTypes,
+    Defaults,
+    MessageHandler,
+    PersistenceInput,
+    PicklePersistence,
+    TypeHandler,
+    filters,
 )
 
 import settings
@@ -18,7 +26,6 @@ CONVS = {
     consts.STATE_HOME: conversations.home_handler,
     consts.STATE_REQUEST_COURSE: conversations.request_course_handler,
     consts.STATE_CONVERT_COURSE: conversations.convert_course_handler,
-
     # Admin
     consts.STATE_ADMIN: conversations.admin_panel_handler,
     consts.STATE_ADMIN_GET_FILE: conversations.admin_send_file_handler,
@@ -72,7 +79,7 @@ def run():
         filepath=settings.BOT_DATABASE_DIR / "bot",
         store_data=PersistenceInput(chat_data=False, callback_data=False),
         single_file=False,
-        update_interval=settings.BOT_DATABASE_UPDATE_INTERVAL
+        update_interval=settings.BOT_DATABASE_UPDATE_INTERVAL,
     )
 
     # Default
@@ -92,13 +99,14 @@ def run():
     admin_filter = filters.User(user_id=settings.ADMIN_IDS)
 
     app.add_handler(TypeHandler(Update, track_users), group=-1)
-    app.add_handlers([
-        CommandHandler("start", conversations.start_command_handler),
-        CommandHandler("panel", conversations.admin_start_command_handler, filters=admin_filter),
-
-        MessageHandler(filters.TEXT, state_handler),
-        MessageHandler(filters.Document.ALL, document_state_handler),
-    ])
+    app.add_handlers(
+        [
+            CommandHandler("start", conversations.start_command_handler),
+            CommandHandler("panel", conversations.admin_start_command_handler, filters=admin_filter),
+            MessageHandler(filters.TEXT, state_handler),
+            MessageHandler(filters.Document.ALL, document_state_handler),
+        ]
+    )
 
     # Errors
     app.add_error_handler(error)
