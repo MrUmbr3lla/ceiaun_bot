@@ -45,8 +45,8 @@ async def home_handler(update: Update, context: CustomContext):
                 InputMediaDocument(settings.FILE_SE_CHARTS[0]),
                 InputMediaDocument(
                     settings.FILE_SE_CHARTS[1],
-                    caption=messages.CHART_SE_CAPTION
-                )
+                    caption=messages.CHART_SE_CAPTION,
+                ),
             ],
         )
         # Send it charts
@@ -56,15 +56,15 @@ async def home_handler(update: Update, context: CustomContext):
                 InputMediaDocument(settings.FILE_IT_CHARTS[0]),
                 InputMediaDocument(
                     settings.FILE_IT_CHARTS[1],
-                    caption=messages.CHART_IT_CAPTION
-                )
+                    caption=messages.CHART_IT_CAPTION,
+                ),
             ],
         )
         # Send orient help
         await update.message.reply_text(
+            quote=True,
             text=messages.CHART_SELECT_ORIENT,
             reply_markup=keyboards.HOME_KEYBOARD,
-            quote=True
         )
 
         return consts.STATE_HOME
@@ -75,26 +75,18 @@ async def home_handler(update: Update, context: CustomContext):
             document=settings.FILE_CONVERT_NAME,
             caption=messages.CONVERT_NAME_COMMAND,
             reply_markup=keyboards.BACK_KEYBOARD,
-            quote=True
+            quote=True,
         )
 
         return consts.STATE_CONVERT_COURSE
 
     # students requests
     if text == keyboards.HOME_COURSE_REQUEST:
-        if settings.REQUEST_CLOSE:
-            await update.message.reply_text(
-                text=messages.REQ_CLOSE,
-                reply_markup=keyboards.HOME_KEYBOARD,
-                quote=True
-            )
-            return None
-
         await update.message.reply_document(
             document=settings.FILE_COURSE_REQUEST,
             caption=messages.REQ_COMMAND,
             reply_markup=keyboards.BACK_KEYBOARD,
-            quote=True
+            quote=True,
         )
 
         return consts.STATE_REQUEST_COURSE
@@ -117,7 +109,7 @@ async def convert_course_handler(update: Update, context: CustomContext):
     await update.message.reply_text(
         text=messages.CONVERT_NAME_RESULT.format(result=result),
         quote=True,
-        reply_markup=keyboards.BACK_KEYBOARD
+        reply_markup=keyboards.BACK_KEYBOARD,
     )
 
 
@@ -135,7 +127,7 @@ async def request_course_handler(update: Update, context: CustomContext):
         await update.message.reply_text(
             text=e.args[0],
             reply_markup=keyboards.BACK_KEYBOARD,
-            quote=True
+            quote=True,
         )
         bad_request_logger.info(f"user {user_id} with username @{username} has bad request with id {e.args[1]}: {text}")
         return None
@@ -146,5 +138,5 @@ async def request_course_handler(update: Update, context: CustomContext):
     await update.message.reply_text(
         text=messages.REQ_RECEIVED_REQ,
         reply_markup=keyboards.BACK_KEYBOARD,
-        quote=True
+        quote=True,
     )
