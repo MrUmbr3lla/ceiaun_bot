@@ -172,7 +172,7 @@ async def summer_request_handler(update: Update, context: CustomContext):
     if query.data == inline_keyboards.SUMMER_REQUEST_ACCEPT_QUERY:
         if not any(value for value in context.user_summer_course_status.values()):
             await query.answer(
-                text="حداقل یکی از دروس را انتخاب کنید!",
+                text=messages.SUMMER_REQ_ONE_SELECTED_AT_LEAST,
                 show_alert=True,
             )
 
@@ -180,7 +180,7 @@ async def summer_request_handler(update: Update, context: CustomContext):
 
         await query.answer()
         await query.edit_message_text(
-            text="نام و نام خانوادگی خود را به همراه شماره دانشجویی به فرمت زیر ارسال کنید:",
+            text=messages.SUMMER_REQ_GET_STUDENT_INFO,
             reply_markup=inline_keyboards.SUMMER_REQUEST_GET_NAME_KEYBOARD,
         )
 
@@ -188,7 +188,7 @@ async def summer_request_handler(update: Update, context: CustomContext):
 
     if query.data == inline_keyboards.SUMMER_REQUEST_BACK_QUERY:
         await query.answer()
-        await query.edit_message_text(text="درخواست لفو شد.")
+        await query.edit_message_text(text=messages.SUMMER_REQ_CANCELED)
         await context.bot.send_message(
             chat_id=query.from_user.id,
             text=messages.HOME_SHORT,
@@ -238,7 +238,7 @@ async def summer_request_get_name_handler(update: Update, context: CustomContext
         context.summer_request_list.append(request_list)
 
     await update.message.reply_text(
-        text="درخواست دریافت شد. توجه کنید که درخواست های تکراری حذف خواهند شد.",
+        text=messages.SUMMER_REQ_SUCCESS,
         reply_markup=keyboards.HOME_KEYBOARD,
         quote=True,
     )

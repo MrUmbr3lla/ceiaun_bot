@@ -36,15 +36,12 @@ def process_course_request(text: str) -> list:
 
 
 def generate_summer_request_response(course_status: dict[int, bool]) -> str:
-    response = """انتخاب کنید.
-
-درس های انتخابی شما:
-{courses}"""
+    response = messages.SUMMER_REQ_SELECT_COURSES
 
     if not any(value for value in course_status.values()):
-        return response.format(courses="شما هنوز هیچ درسی انتخاب نکرده اید!")
+        return response.format(courses=messages.SUMMER_REQ_NO_COURSE_SELECTED)
 
-    courses = [course.name for course in SUMMER_REQUEST_COURSES if course_status[course.id]]
+    courses = [f"➕ {course.name}" for course in SUMMER_REQUEST_COURSES if course_status[course.id]]
 
     return response.format(courses="\n".join(courses))
 
@@ -54,7 +51,7 @@ def process_summer_course_request(text: str) -> list:
 
     # Request must be 2 part (student name + student id)
     if len(user_text) != 2:
-        raise ValueError("درخواست را طبق فرمت ارسال کنید", "REQ_ERROR_LENGTH")
+        raise ValueError(messages.SUMMER_REQ_ERROR_LENGTH, "REQ_ERROR_LENGTH")
 
     student_name = user_text[0].strip()
     student_id = remove_special_characters(unidecode(user_text[1]))

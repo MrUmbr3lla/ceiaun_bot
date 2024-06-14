@@ -7,7 +7,7 @@ SUMMER_REQUEST_BACK_QUERY = "back"
 
 
 SUMMER_REQUEST_GET_NAME_KEYBOARD = InlineKeyboardMarkup(
-    [[InlineKeyboardButton("برگشت", callback_data=SUMMER_REQUEST_BACK_QUERY)]]
+    [[InlineKeyboardButton("برگشت 🔙", callback_data=SUMMER_REQUEST_BACK_QUERY)]]
 )
 
 
@@ -26,7 +26,7 @@ def generate_summer_request_inline_keyboard(course_status: dict[int, bool]) -> I
     for i in range(0, len(keyboards), 2):
         inline_keyboard.append(keyboards[i : i + 2])
 
-    inline_keyboard.append([InlineKeyboardButton("ثبت نهایی درخواست", callback_data=SUMMER_REQUEST_ACCEPT_QUERY)])
-    inline_keyboard.append([InlineKeyboardButton("برگشت", callback_data=SUMMER_REQUEST_BACK_QUERY)])
+    inline_keyboard.append([InlineKeyboardButton("ثبت درخواست 🎯", callback_data=SUMMER_REQUEST_ACCEPT_QUERY)])
+    inline_keyboard.append([InlineKeyboardButton("برگشت 🔙", callback_data=SUMMER_REQUEST_BACK_QUERY)])
 
     return InlineKeyboardMarkup(inline_keyboard)
