@@ -2,6 +2,7 @@ from telegram import KeyboardButton, ReplyKeyboardMarkup
 
 # Home
 HOME_COURSE_REQUEST = "درخواست افزایش ظرفیت 📮"
+HOME_SUMMER_REQUEST = "درخواست دروس تابستان ➕"
 HOME_CONVERT_NAME = "ابزار تبدیل متن 🔃"
 HOME_CHART = "چارت دروس 📚"
 
@@ -9,6 +10,9 @@ HOME_KEYBOARD = ReplyKeyboardMarkup(
     [
         [
             KeyboardButton(HOME_COURSE_REQUEST),
+        ],
+        [
+            KeyboardButton(HOME_SUMMER_REQUEST),
         ],
         [
             KeyboardButton(HOME_CONVERT_NAME),

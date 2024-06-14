@@ -3,9 +3,11 @@ import logging
 from telegram import InputMediaDocument, Update
 
 import settings
-from bot import consts, keyboards, messages
+from bot import consts, inline_keyboards, keyboards, messages
+from bot.consts import SUMMER_REQUEST_COURSES
 from bot.context import CustomContext
 from utils import process_course_request
+from utils.course_request import generate_summer_request_response, process_summer_course_request
 
 logger = logging.getLogger(__name__)
 request_logger = logging.getLogger("request_log")
@@ -36,9 +38,8 @@ async def back_home(update: Update, context: CustomContext):
 async def home_handler(update: Update, context: CustomContext):
     text = update.message.text
 
-    # sending courses_list
     if text == keyboards.HOME_CHART:
-        # Send se chart
+        # Send SE chart
         await context.bot.send_media_group(
             chat_id=update.effective_chat.id,
             media=[
@@ -49,7 +50,7 @@ async def home_handler(update: Update, context: CustomContext):
                 ),
             ],
         )
-        # Send it charts
+        # Send IT charts
         await context.bot.send_media_group(
             chat_id=update.effective_chat.id,
             media=[
@@ -90,6 +91,17 @@ async def home_handler(update: Update, context: CustomContext):
         )
 
         return consts.STATE_REQUEST_COURSE
+
+    if text == keyboards.HOME_SUMMER_REQUEST:
+        context.user_summer_course_status = {course.id: False for course in SUMMER_REQUEST_COURSES}
+
+        await update.message.reply_text(
+            text=generate_summer_request_response(context.user_summer_course_status),
+            reply_markup=inline_keyboards.generate_summer_request_inline_keyboard(context.user_summer_course_status),
+            quote=True,
+        )
+
+        return consts.STATE_SUMMER_REQUEST
 
 
 async def convert_course_handler(update: Update, context: CustomContext):
@@ -140,3 +152,96 @@ async def request_course_handler(update: Update, context: CustomContext):
         reply_markup=keyboards.BACK_KEYBOARD,
         quote=True,
     )
+
+
+async def summer_request_handler(update: Update, context: CustomContext):
+    query = update.callback_query
+
+    if query.data.startswith("course"):
+        course_id = int(query.data.replace("course-", ""))
+        course_status = context.user_summer_course_status
+        course_status[course_id] = not course_status[course_id]
+
+        await query.answer()
+        await query.edit_message_text(
+            text=generate_summer_request_response(course_status),
+            reply_markup=inline_keyboards.generate_summer_request_inline_keyboard(course_status),
+        )
+
+        return consts.STATE_SUMMER_REQUEST
+
+    if query.data == inline_keyboards.SUMMER_REQUEST_ACCEPT_QUERY:
+        if not any(value for value in context.user_summer_course_status.values()):
+            await query.answer(
+                text="حداقل یکی از دروس را انتخاب کنید!",
+                show_alert=True,
+            )
+
+            return consts.STATE_SUMMER_REQUEST
+
+        await query.answer()
+        await query.edit_message_text(
+            text="نام و نام خانوادگی خود را به همراه شماره دانشجویی به فرمت زیر ارسال کنید:",
+            reply_markup=inline_keyboards.SUMMER_REQUEST_GET_NAME_KEYBOARD,
+        )
+
+        return consts.STATE_SUMMER_REQUEST_GET_NAME
+
+    if query.data == inline_keyboards.SUMMER_REQUEST_BACK_QUERY:
+        await query.answer()
+        await query.edit_message_text(text="درخواست لفو شد.")
+        await context.bot.send_message(
+            chat_id=query.from_user.id,
+            text=messages.HOME_SHORT,
+            reply_markup=keyboards.HOME_KEYBOARD,
+        )
+
+        return consts.STATE_HOME
+
+
+async def summer_request_get_name_handler(update: Update, context: CustomContext):
+    query = update.callback_query
+    if query and query.data == inline_keyboards.SUMMER_REQUEST_BACK_QUERY:
+        await query.answer()
+        await query.edit_message_text(
+            text=generate_summer_request_response(context.user_summer_course_status),
+            reply_markup=inline_keyboards.generate_summer_request_inline_keyboard(context.user_summer_course_status),
+        )
+
+        return consts.STATE_SUMMER_REQUEST
+
+    if not update.message:
+        return None
+
+    text = update.message.text
+    user_id = update.effective_user.id
+    username = update.effective_user.username
+    try:
+        student_info = process_summer_course_request(text)
+    except ValueError as e:
+        await update.message.reply_text(
+            text=e.args[0],
+            reply_markup=inline_keyboards.SUMMER_REQUEST_GET_NAME_KEYBOARD,
+            quote=True,
+        )
+        bad_request_logger.info(
+            f"user {user_id} with username @{username} has bad summer request with id {e.args[1]}: {text}"
+        )
+
+        return consts.STATE_SUMMER_REQUEST_GET_NAME
+
+    for course in SUMMER_REQUEST_COURSES:
+        if not context.user_summer_course_status[course.id]:
+            continue
+
+        request_list = [*student_info, course.name]
+        request_logger.info(f"user {user_id} with username @{username} has summer request: {','.join(request_list)}")
+        context.summer_request_list.append(request_list)
+
+    await update.message.reply_text(
+        text="درخواست دریافت شد. توجه کنید که درخواست های تکراری حذف خواهند شد.",
+        reply_markup=keyboards.HOME_KEYBOARD,
+        quote=True,
+    )
+
+    return consts.STATE_HOME

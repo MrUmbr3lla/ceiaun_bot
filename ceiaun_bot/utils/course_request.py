@@ -1,6 +1,8 @@
 from unidecode import unidecode
 
 from bot import consts, messages
+from bot.consts import SUMMER_REQUEST_COURSES
+from utils.validators import clean_course_id, clean_course_name, clean_student_id, clean_student_name
 
 
 def remove_special_characters(text: str) -> str:
@@ -33,45 +35,32 @@ def process_course_request(text: str) -> list:
     return [student_name, student_id, course_name, course_id]
 
 
-def clean_student_name(name: str) -> None:
-    if name == "":
-        raise ValueError(messages.REQ_ERROR_USERNAME_NONE, "REQ_ERROR_USERNAME_NONE")
+def generate_summer_request_response(course_status: dict[int, bool]) -> str:
+    response = """انتخاب کنید.
 
-    if name.isnumeric():
-        raise ValueError(messages.REQ_ERROR_USERNAME, "REQ_ERROR_USERNAME")
+درس های انتخابی شما:
+{courses}"""
 
+    if not any(value for value in course_status.values()):
+        return response.format(courses="شما هنوز هیچ درسی انتخاب نکرده اید!")
 
-def clean_student_id(student_id):
-    if student_id == "":
-        raise ValueError(messages.REQ_ERROR_STUDENT_ID_NONE, "REQ_ERROR_STUDENT_ID_NONE")
+    courses = [course.name for course in SUMMER_REQUEST_COURSES if course_status[course.id]]
 
-    if not student_id.isnumeric():
-        raise ValueError(messages.REQ_ERROR_STUDENT_ID, "REQ_ERROR_STUDENT_ID")
-
-    if len(student_id) == 10:
-        raise ValueError(messages.REQ_ERROR_STUDENT_ID_CODE_MELLI, "REQ_ERROR_STUDENT_ID_CODE_MELLI")
-
-    if len(student_id) not in [8, 11, 14]:
-        raise ValueError(messages.REQ_ERROR_STUDENT_ID, "REQ_ERROR_STUDENT_ID")
+    return response.format(courses="\n".join(courses))
 
 
-def clean_course_name(course_name):
-    if course_name == "":
-        raise ValueError(messages.REQ_ERROR_COURSE_NONE, "REQ_ERROR_COURSE_NONE")
+def process_summer_course_request(text: str) -> list:
+    user_text = text.split("+")
 
-    if course_name.isnumeric():
-        raise ValueError(messages.REQ_ERROR_COURSE, "REQ_ERROR_COURSE")
+    # Request must be 2 part (student name + student id)
+    if len(user_text) != 2:
+        raise ValueError("درخواست را طبق فرمت ارسال کنید", "REQ_ERROR_LENGTH")
 
-    if consts.COURSE_NAME_EXCLUDE_REGEX.match(course_name):
-        raise ValueError(messages.REQ_ERROR_COURSE_DEPARTMENT, "REQ_ERROR_COURSE_DEPARTMENT")
+    student_name = user_text[0].strip()
+    student_id = remove_special_characters(unidecode(user_text[1]))
 
+    # Clean
+    clean_student_name(student_name)
+    clean_student_id(student_id)
 
-def clean_course_id(course_id):
-    if course_id == "":
-        raise ValueError(messages.REQ_ERROR_COURSE_ID_NONE, "REQ_ERROR_COURSE_ID_NONE")
-
-    if not course_id.isnumeric():
-        raise ValueError(messages.REQ_ERROR_COURSE_ID, "REQ_ERROR_COURSE_ID")
-
-    if len(course_id) == 10:
-        raise ValueError(messages.REQ_ERROR_COURSE_ID_INSTEAD, "REQ_ERROR_COURSE_ID_INSTEAD")
+    return [student_name, student_id]
