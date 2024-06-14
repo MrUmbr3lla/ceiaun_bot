@@ -57,10 +57,14 @@ async def state_handler(update: Update, context: CustomContext):
 
 
 async def inline_state_handler(update: Update, context: CustomContext):
+    if context.user_last_inline_message and context.user_last_inline_message != update.callback_query.message.id:
+        return None
+
     user_state = context.user_state
 
-    result = await INLINE_CONVS[user_state](update, context)
-    context.user_state = result
+    if user_state in INLINE_CONVS:
+        result = await INLINE_CONVS[user_state](update, context)
+        context.user_state = result
 
 
 async def document_state_handler(update: Update, context: CustomContext):

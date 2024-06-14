@@ -94,11 +94,12 @@ async def home_handler(update: Update, context: CustomContext):
     if text == keyboards.HOME_SUMMER_REQUEST:
         context.user_summer_course_status = {course.id: False for course in SUMMER_REQUEST_COURSES}
 
-        await update.message.reply_text(
+        result = await update.message.reply_text(
             text=generate_summer_request_response(context.user_summer_course_status),
             reply_markup=inline_keyboards.generate_summer_request_inline_keyboard(context.user_summer_course_status),
             quote=True,
         )
+        context.user_last_inline_message = result.message_id
 
         return consts.STATE_SUMMER_REQUEST
 
@@ -218,11 +219,13 @@ async def summer_request_get_name_handler(update: Update, context: CustomContext
     try:
         student_info = process_summer_course_request(text)
     except ValueError as e:
-        await update.message.reply_text(
+        result = await update.message.reply_text(
             text=e.args[0],
             reply_markup=inline_keyboards.SUMMER_REQUEST_GET_NAME_KEYBOARD,
             quote=True,
         )
+        context.user_last_inline_message = result.message_id
+
         bad_request_logger.info(
             f"user {user_id} with username @{username} has bad summer request with id {e.args[1]}: {text}"
         )
@@ -242,5 +245,6 @@ async def summer_request_get_name_handler(update: Update, context: CustomContext
         reply_markup=keyboards.HOME_KEYBOARD,
         quote=True,
     )
+    context.user_last_inline_message = None
 
     return consts.STATE_HOME

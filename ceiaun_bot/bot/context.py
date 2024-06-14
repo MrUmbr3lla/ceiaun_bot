@@ -1,3 +1,5 @@
+from typing import Optional
+
 from telegram.ext import CallbackContext, ExtBot
 
 from bot import consts
@@ -48,3 +50,11 @@ class CustomContext(CallbackContext[ExtBot, dict, dict, dict]):
     @user_summer_course_status.setter
     def user_summer_course_status(self, value: dict[int, bool]) -> None:
         self.user_data["summer_course_status"] = value
+
+    @property
+    def user_last_inline_message(self) -> Optional[int]:
+        return self.user_data.setdefault("last_inline_message", None)
+
+    @user_last_inline_message.setter
+    def user_last_inline_message(self, value: Optional[int]) -> None:
+        self.user_data["last_inline_message"] = value
