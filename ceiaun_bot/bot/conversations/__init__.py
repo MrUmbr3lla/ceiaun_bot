@@ -5,6 +5,7 @@ from .admin import (
     admin_send_file_handler,
     admin_send_file_id_handler,
     admin_send_message_handler,
+    admin_send_message_to_all_handler,
     admin_send_summer_request_handler,
     admin_start_command_handler,
     back_admin,

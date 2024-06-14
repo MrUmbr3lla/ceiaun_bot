@@ -112,6 +112,15 @@ async def admin_panel_handler(update: Update, context: CustomContext):
 
         return consts.STATE_ADMIN_CLEAN_SUMMER_REQUEST
 
+    if text == keyboards.ADMIN_SEND_MESSAGE_TO_ALL:
+        await update.message.reply_text(
+            text=messages.ADMIN_SEND_MSH_TO_ALL,
+            reply_markup=keyboards.BACK_KEYBOARD,
+            quote=True,
+        )
+
+        return consts.STATE_ADMIN_SEND_MSG_TO_ALL
+
 
 async def admin_send_file_handler(update: Update, context: CustomContext):
     if update.effective_user.id not in settings.ADMIN_IDS:
@@ -276,5 +285,27 @@ async def admin_clean_summer_request_list_handler(update: Update, context: Custo
         reply_markup=keyboards.ADMIN_KEYBOARD,
         quote=True,
     )
+
+    return consts.STATE_ADMIN
+
+
+async def admin_send_message_to_all_handler(update: Update, context: CustomContext):
+    if update.effective_user.id not in settings.ADMIN_IDS:
+        return consts.STATE_HOME
+
+    text = update.message.text
+    if text == keyboards.BACK:
+        return await back_admin(update, context)
+
+    for chat_id in context.bot_user_ids:
+        try:
+            await context.bot.send_message(
+                chat_id=chat_id,
+                text=text,
+            )
+        except Exception as e:
+            logger.error(f"send to all error for user {chat_id}: {e}")
+
+    await update.message.reply_text(text=messages.ADMIN_HOME, quote=True, reply_markup=keyboards.ADMIN_KEYBOARD)
 
     return consts.STATE_ADMIN
