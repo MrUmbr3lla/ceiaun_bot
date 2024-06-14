@@ -5,6 +5,7 @@ from telegram.constants import ParseMode
 from telegram.ext import (
     AIORateLimiter,
     Application,
+    CallbackQueryHandler,
     CommandHandler,
     ContextTypes,
     Defaults,
@@ -26,12 +27,18 @@ CONVS = {
     consts.STATE_HOME: conversations.home_handler,
     consts.STATE_REQUEST_COURSE: conversations.request_course_handler,
     consts.STATE_CONVERT_COURSE: conversations.convert_course_handler,
+    consts.STATE_SUMMER_REQUEST_GET_NAME: conversations.summer_request_get_name_handler,
     # Admin
     consts.STATE_ADMIN: conversations.admin_panel_handler,
     consts.STATE_ADMIN_GET_FILE: conversations.admin_send_file_handler,
     consts.STATE_ADMIN_FILE_ID: conversations.admin_send_file_id_handler,
     consts.STATE_ADMIN_CLEAN_REQ: conversations.admin_clean_request_list_handler,
     consts.STATE_ADMIN_SEND_MSG: conversations.admin_send_message_handler,
+}
+
+INLINE_CONVS = {
+    consts.STATE_SUMMER_REQUEST: conversations.summer_request_handler,
+    consts.STATE_SUMMER_REQUEST_GET_NAME: conversations.summer_request_get_name_handler,
 }
 
 CONVS_DOC = {
@@ -43,12 +50,15 @@ CONVS_DOC = {
 async def state_handler(update: Update, context: CustomContext):
     user_state = context.user_state
 
-    # logger.info(f"user {update.effective_user.id} state: {user_state}")
-
     result = await CONVS[user_state](update, context)
     context.user_state = result
 
-    # logger.info(f"user {update.effective_user.id} with result: {result} -> state: {context.user_state}")
+
+async def inline_state_handler(update: Update, context: CustomContext):
+    user_state = context.user_state
+
+    result = await INLINE_CONVS[user_state](update, context)
+    context.user_state = result
 
 
 async def document_state_handler(update: Update, context: CustomContext):
@@ -70,7 +80,7 @@ async def track_users(update: Update, context: CustomContext) -> None:
 
 
 async def error(update: Update, context: CustomContext):
-    logger.warning(f"Error for update {update} caused error {context.error}")
+    logger.warning(f"Error {context.error} for update {update}")
 
 
 def run():
@@ -105,14 +115,14 @@ def run():
             CommandHandler("panel", conversations.admin_start_command_handler, filters=admin_filter),
             MessageHandler(filters.TEXT, state_handler),
             MessageHandler(filters.Document.ALL, document_state_handler),
+            CallbackQueryHandler(inline_state_handler),
         ]
     )
 
     # Errors
     app.add_error_handler(error)
 
-    # TODO: Check edited message
-    app.run_polling(allowed_updates=Update.MESSAGE)
+    app.run_polling(allowed_updates=[Update.MESSAGE, Update.CALLBACK_QUERY])
 
 
 if __name__ == "__main__":

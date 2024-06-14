@@ -13,4 +13,6 @@ from .user import (
     home_handler,
     request_course_handler,
     start_command_handler,
+    summer_request_get_name_handler,
+    summer_request_handler,
 )
