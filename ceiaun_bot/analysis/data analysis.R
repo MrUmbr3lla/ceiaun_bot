@@ -21,13 +21,13 @@ merged_data <- data.frame()
 for (i in 1:length(file_paths)) {
   # Read data
   assign(paste0("X2_", i), read_excel(file_paths[i]))
-  
+
 
   # Filter out wrong inputs and make data unique
   cleaned_data <- get(paste0("X2_", i)) %>%
     filter(!grepl("%", .[[3]]) | is.na(.[[3]])) %>%
     distinct()
-  
+
 
   # Merge the cleaned data with the previous datasets
   merged_data <- rbind(merged_data, cleaned_data)

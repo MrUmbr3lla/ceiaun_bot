@@ -108,7 +108,7 @@ async def admin_send_file_handler(update: Update, context: CustomContext):
         f"{text} ({first_index + 1}-{len(course_requests)})",
         text,
         remove_duplicate_request(course_requests[first_index:]),
-        ["A", "B", "C", "D"]
+        ["A", "B", "C", "D"],
     )
     context.file_last_index = len(course_requests)
 
