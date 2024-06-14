@@ -139,3 +139,4 @@ ADMIN_SEND_MSG_SUCCESS = (
 ADMIN_SEND_MSG_TEMPLATE = """📍<b>پیام ادمین</b>
 
 {message}"""
+ADMIN_SEND_MSH_TO_ALL = "پیام خود را ارسال کنید."

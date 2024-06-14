@@ -36,6 +36,7 @@ CONVS = {
     consts.STATE_ADMIN_SEND_MSG: conversations.admin_send_message_handler,
     consts.STATE_ADMIN_SUMMER_REQUEST: conversations.admin_send_summer_request_handler,
     consts.STATE_ADMIN_CLEAN_SUMMER_REQUEST: conversations.admin_clean_summer_request_list_handler,
+    consts.STATE_ADMIN_SEND_MSG_TO_ALL: conversations.admin_send_message_to_all_handler,
 }
 
 INLINE_CONVS = {

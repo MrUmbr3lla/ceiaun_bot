@@ -44,6 +44,7 @@ ADMIN_CLEAN_REQUEST_LIST = "پاکسازی لیست درخواست ها"
 ADMIN_GET_SUMMER_REQUESTS = "دریافت درخواست های تابستان"
 ADMIN_CLEAN_SUMMER_REQUESTS = "پاکسازی لیست درخواست های تابستان"
 ADMIN_SEND_MESSAGE = "ارسال پیام به کاربر"
+ADMIN_SEND_MESSAGE_TO_ALL = "ارسال پیام به همه"
 
 ADMIN_KEYBOARD = ReplyKeyboardMarkup(
     [
@@ -61,6 +62,9 @@ ADMIN_KEYBOARD = ReplyKeyboardMarkup(
         ],
         [
             KeyboardButton(ADMIN_SEND_MESSAGE),
+        ],
+        [
+            KeyboardButton(ADMIN_SEND_MESSAGE_TO_ALL),
         ],
     ],
     resize_keyboard=True,
