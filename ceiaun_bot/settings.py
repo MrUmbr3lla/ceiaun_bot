@@ -86,6 +86,7 @@ os.makedirs(BOT_DATABASE_DIR, exist_ok=True)
 
 # Excel files
 EXCEL_BASE_TEMPLATE = BASE_DIR / "data/base/report.xlsx"
+EXCEL_BASE_SUMMER_TEMPLATE = BASE_DIR / "data/base/summer_report.xlsx"
 EXCEL_GENERATED_FILES_DIR = BASE_DIR / "data/generated_files"
 os.makedirs(EXCEL_GENERATED_FILES_DIR, exist_ok=True)
 EXCEL_TEMP_FILE = EXCEL_GENERATED_FILES_DIR / "temp.xlsx"

@@ -6,6 +6,7 @@ import settings
 from bot import consts, keyboards, messages
 from bot.context import CustomContext
 from utils import remove_duplicate_request, write_data_to_sheet
+from utils.course_request import remove_duplicate_summer_request
 
 logger = logging.getLogger(__name__)
 
@@ -93,6 +94,24 @@ async def admin_panel_handler(update: Update, context: CustomContext):
 
         return consts.STATE_ADMIN_SEND_MSG
 
+    if text == keyboards.ADMIN_GET_SUMMER_REQUESTS:
+        await update.message.reply_text(
+            text=messages.ADMIN_SUMMER_REQUEST_TITLE,
+            reply_markup=keyboards.BACK_KEYBOARD,
+            quote=True,
+        )
+
+        return consts.STATE_ADMIN_SUMMER_REQUEST
+
+    if text == keyboards.ADMIN_CLEAN_SUMMER_REQUESTS:
+        await update.message.reply_text(
+            text=messages.ADMIN_CLEAN_SUMMER_REQUEST_TITLE,
+            reply_markup=keyboards.BACK_KEYBOARD,
+            quote=True,
+        )
+
+        return consts.STATE_ADMIN_CLEAN_SUMMER_REQUEST
+
 
 async def admin_send_file_handler(update: Update, context: CustomContext):
     if update.effective_user.id not in settings.ADMIN_IDS:
@@ -105,6 +124,7 @@ async def admin_send_file_handler(update: Update, context: CustomContext):
     first_index = context.file_last_index
     course_requests = context.request_list
     file_path = write_data_to_sheet(
+        settings.EXCEL_BASE_TEMPLATE,
         f"{text} ({first_index + 1}-{len(course_requests)})",
         text,
         remove_duplicate_request(course_requests[first_index:]),
@@ -153,6 +173,7 @@ async def admin_clean_request_list_handler(update: Update, context: CustomContex
 
     course_requests = context.request_list
     file_path = write_data_to_sheet(
+        settings.EXCEL_BASE_TEMPLATE,
         f"{text} (1-{len(course_requests)})",
         text,
         course_requests,
@@ -164,10 +185,6 @@ async def admin_clean_request_list_handler(update: Update, context: CustomContex
 
     await update.message.reply_document(
         document=file_path,
-    )
-
-    await update.message.reply_text(
-        text=messages.ADMIN_HOME,
         reply_markup=keyboards.ADMIN_KEYBOARD,
         quote=True,
     )
@@ -203,6 +220,59 @@ async def admin_send_message_handler(update: Update, context: CustomContext):
 
     await update.message.reply_text(
         text=result_message,
+        reply_markup=keyboards.ADMIN_KEYBOARD,
+        quote=True,
+    )
+
+    return consts.STATE_ADMIN
+
+
+async def admin_send_summer_request_handler(update: Update, context: CustomContext):
+    if update.effective_user.id not in settings.ADMIN_IDS:
+        return consts.STATE_HOME
+
+    text = update.message.text
+    if text == keyboards.BACK:
+        return await back_admin(update, context)
+
+    file_path = write_data_to_sheet(
+        settings.EXCEL_BASE_SUMMER_TEMPLATE,
+        text,
+        text,
+        remove_duplicate_summer_request(context.summer_request_list),
+        ["A", "B", "C"],
+    )
+
+    await update.message.reply_document(
+        document=file_path,
+        reply_markup=keyboards.ADMIN_KEYBOARD,
+        quote=True,
+    )
+
+    return consts.STATE_ADMIN
+
+
+async def admin_clean_summer_request_list_handler(update: Update, context: CustomContext):
+    if update.effective_user.id not in settings.ADMIN_IDS:
+        return consts.STATE_HOME
+
+    text = update.message.text
+    if text == keyboards.BACK:
+        return await back_admin(update, context)
+
+    file_path = write_data_to_sheet(
+        settings.EXCEL_BASE_SUMMER_TEMPLATE,
+        text,
+        text,
+        remove_duplicate_summer_request(context.summer_request_list),
+        ["A", "B", "C"],
+    )
+
+    # Clean list
+    context.summer_request_list = []
+
+    await update.message.reply_document(
+        document=file_path,
         reply_markup=keyboards.ADMIN_KEYBOARD,
         quote=True,
     )

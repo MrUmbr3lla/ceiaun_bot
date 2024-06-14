@@ -34,6 +34,8 @@ CONVS = {
     consts.STATE_ADMIN_FILE_ID: conversations.admin_send_file_id_handler,
     consts.STATE_ADMIN_CLEAN_REQ: conversations.admin_clean_request_list_handler,
     consts.STATE_ADMIN_SEND_MSG: conversations.admin_send_message_handler,
+    consts.STATE_ADMIN_SUMMER_REQUEST: conversations.admin_send_summer_request_handler,
+    consts.STATE_ADMIN_CLEAN_SUMMER_REQUEST: conversations.admin_clean_summer_request_list_handler,
 }
 
 INLINE_CONVS = {

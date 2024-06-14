@@ -6,8 +6,7 @@ import settings
 from bot import consts, inline_keyboards, keyboards, messages
 from bot.consts import SUMMER_REQUEST_COURSES
 from bot.context import CustomContext
-from utils import process_course_request
-from utils.course_request import generate_summer_request_response, process_summer_course_request
+from utils import generate_summer_request_response, process_course_request, process_summer_course_request
 
 logger = logging.getLogger(__name__)
 request_logger = logging.getLogger("request_log")

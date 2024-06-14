@@ -106,6 +106,8 @@ ADMIN_GET_FILE_TITLE = "عنوان فایل را ارسال کنید:"
 ADMIN_GET_FILE_NONE = "هیچ درخواستی وجود ندارد!"
 ADMIN_GET_FILE_ID = "فایل را ارسال کنید:"
 ADMIN_CLEAN_REQ_LIST = "عنوان فایل نهایی را وارد کنید:"
+ADMIN_SUMMER_REQUEST_TITLE = "عنوان فایل را ارسال کنید:"
+ADMIN_CLEAN_SUMMER_REQUEST_TITLE = "عنوان فایل نهایی را ارسال کنید:"
 ADMIN_SEND_MSG_GET = "آیدی عددی کاربر در خط اول و پیام در خطوط بعدی ارسال کنید:"
 ADMIN_SEND_MSG_SUCCESS = (
     "پیام با موفقیت به کاربر {user} با آیدی پیام {message_id}، نام {name} و یوزرنیم @{username} ارسال شد."

@@ -76,3 +76,15 @@ def remove_duplicate_request(request_list: list[list]) -> list[list]:
             result.append(req)
 
     return result
+
+
+def remove_duplicate_summer_request(request_list: list[list]) -> list[list]:
+    requests = {}
+    result = []
+    for req in request_list:
+        course_student = requests.setdefault(req[2], [])
+        if req[1] not in course_student:
+            course_student.append(req[1])
+            result.append(req)
+
+    return result

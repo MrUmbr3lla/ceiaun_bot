@@ -41,6 +41,8 @@ ADMIN_STAT = "آمار 📝"
 ADMIN_GET_FILE_ID = "دریافت آیدی فایل"
 ADMIN_GET_FILE = "دریافت فایل اکسل 📤"
 ADMIN_CLEAN_REQUEST_LIST = "پاکسازی لیست درخواست ها"
+ADMIN_GET_SUMMER_REQUESTS = "دریافت درخواست های تابستان"
+ADMIN_CLEAN_SUMMER_REQUESTS = "پاکسازی لیست درخواست های تابستان"
 ADMIN_SEND_MESSAGE = "ارسال پیام به کاربر"
 
 ADMIN_KEYBOARD = ReplyKeyboardMarkup(
@@ -52,6 +54,10 @@ ADMIN_KEYBOARD = ReplyKeyboardMarkup(
         [
             KeyboardButton(ADMIN_GET_FILE),
             KeyboardButton(ADMIN_CLEAN_REQUEST_LIST),
+        ],
+        [
+            KeyboardButton(ADMIN_GET_SUMMER_REQUESTS),
+            KeyboardButton(ADMIN_CLEAN_SUMMER_REQUESTS),
         ],
         [
             KeyboardButton(ADMIN_SEND_MESSAGE),
