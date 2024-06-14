@@ -5,12 +5,12 @@ from openpyxl.worksheet.worksheet import Worksheet
 import settings
 
 
-def get_new_sheet(title: str) -> Workbook:
+def get_new_sheet(base_file_path: str, title: str) -> Workbook:
     """
     Create new report from base excel template and return workbook.
     """
 
-    workbook = load_workbook(filename=settings.EXCEL_BASE_TEMPLATE)
+    workbook = load_workbook(filename=base_file_path)
     sheet = workbook.active
     sheet["B1"] = title
 
@@ -32,12 +32,12 @@ def find_empty_row(sheet: Worksheet, start_row_number: int = 3) -> int:
         row_number += 1
 
 
-def write_data_to_sheet(file_name: str, title: str, data: list[list], columns: list) -> str:
+def write_data_to_sheet(base_file_path: str, file_name: str, title: str, data: list[list], columns: list) -> str:
     """
     Write data from first empty row of sheet and return file path.
     """
 
-    workbook = get_new_sheet(title)
+    workbook = get_new_sheet(base_file_path, title)
     sheet = workbook.active
     row_number = find_empty_row(sheet)
 

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from telegram.ext import CallbackContext, ExtBot
 
 from bot import consts
@@ -25,6 +27,14 @@ class CustomContext(CallbackContext[ExtBot, dict, dict, dict]):
         self.bot_data["file_last_index"] = value
 
     @property
+    def summer_request_list(self) -> list[list]:
+        return self.bot_data.setdefault("summer_request_list", [])
+
+    @summer_request_list.setter
+    def summer_request_list(self, value: list) -> None:
+        self.bot_data["summer_request_list"] = value
+
+    @property
     def user_state(self) -> int:
         return self.user_data.setdefault("state", consts.STATE_HOME)
 
@@ -32,3 +42,19 @@ class CustomContext(CallbackContext[ExtBot, dict, dict, dict]):
     def user_state(self, value: int) -> None:
         if value is not None:
             self.user_data["state"] = value
+
+    @property
+    def user_summer_course_status(self) -> dict[int, bool]:
+        return self.user_data.setdefault("summer_course_status", {})
+
+    @user_summer_course_status.setter
+    def user_summer_course_status(self, value: dict[int, bool]) -> None:
+        self.user_data["summer_course_status"] = value
+
+    @property
+    def user_last_inline_message(self) -> Optional[int]:
+        return self.user_data.setdefault("last_inline_message", None)
+
+    @user_last_inline_message.setter
+    def user_last_inline_message(self, value: Optional[int]) -> None:
+        self.user_data["last_inline_message"] = value

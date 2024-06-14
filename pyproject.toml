@@ -1,0 +1,26 @@
+[tool.black]
+line-length = 120
+target-version = ["py311"]
+extend-exclude = '''
+(
+  /(
+      \.git
+    | \venv
+  )/
+)
+'''
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+src = ["ceiaun_bot"]
+
+[tool.ruff.lint]
+extend-select = ["I"]
+ignore = ["E722"]
+
+[tool.ruff.lint.extend-per-file-ignores]
+"__init__.py" = ["F401"]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true

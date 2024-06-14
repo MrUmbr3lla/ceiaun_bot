@@ -3,8 +3,17 @@ import logging
 from telegram import Update
 from telegram.constants import ParseMode
 from telegram.ext import (
-    AIORateLimiter, Application, CommandHandler, ContextTypes, Defaults, MessageHandler,
-    PersistenceInput, PicklePersistence, TypeHandler, filters
+    AIORateLimiter,
+    Application,
+    CallbackQueryHandler,
+    CommandHandler,
+    ContextTypes,
+    Defaults,
+    MessageHandler,
+    PersistenceInput,
+    PicklePersistence,
+    TypeHandler,
+    filters,
 )
 
 import settings
@@ -18,13 +27,20 @@ CONVS = {
     consts.STATE_HOME: conversations.home_handler,
     consts.STATE_REQUEST_COURSE: conversations.request_course_handler,
     consts.STATE_CONVERT_COURSE: conversations.convert_course_handler,
-
+    consts.STATE_SUMMER_REQUEST_GET_NAME: conversations.summer_request_get_name_handler,
     # Admin
     consts.STATE_ADMIN: conversations.admin_panel_handler,
     consts.STATE_ADMIN_GET_FILE: conversations.admin_send_file_handler,
     consts.STATE_ADMIN_FILE_ID: conversations.admin_send_file_id_handler,
     consts.STATE_ADMIN_CLEAN_REQ: conversations.admin_clean_request_list_handler,
     consts.STATE_ADMIN_SEND_MSG: conversations.admin_send_message_handler,
+    consts.STATE_ADMIN_SUMMER_REQUEST: conversations.admin_send_summer_request_handler,
+    consts.STATE_ADMIN_CLEAN_SUMMER_REQUEST: conversations.admin_clean_summer_request_list_handler,
+}
+
+INLINE_CONVS = {
+    consts.STATE_SUMMER_REQUEST: conversations.summer_request_handler,
+    consts.STATE_SUMMER_REQUEST_GET_NAME: conversations.summer_request_get_name_handler,
 }
 
 CONVS_DOC = {
@@ -36,12 +52,19 @@ CONVS_DOC = {
 async def state_handler(update: Update, context: CustomContext):
     user_state = context.user_state
 
-    # logger.info(f"user {update.effective_user.id} state: {user_state}")
-
     result = await CONVS[user_state](update, context)
     context.user_state = result
 
-    # logger.info(f"user {update.effective_user.id} with result: {result} -> state: {context.user_state}")
+
+async def inline_state_handler(update: Update, context: CustomContext):
+    if context.user_last_inline_message and context.user_last_inline_message != update.callback_query.message.id:
+        return None
+
+    user_state = context.user_state
+
+    if user_state in INLINE_CONVS:
+        result = await INLINE_CONVS[user_state](update, context)
+        context.user_state = result
 
 
 async def document_state_handler(update: Update, context: CustomContext):
@@ -63,7 +86,7 @@ async def track_users(update: Update, context: CustomContext) -> None:
 
 
 async def error(update: Update, context: CustomContext):
-    logger.warning(f"Error for update {update} caused error {context.error}")
+    logger.warning(f"Error {context.error} for update {update}")
 
 
 def run():
@@ -72,7 +95,7 @@ def run():
         filepath=settings.BOT_DATABASE_DIR / "bot",
         store_data=PersistenceInput(chat_data=False, callback_data=False),
         single_file=False,
-        update_interval=settings.BOT_DATABASE_UPDATE_INTERVAL
+        update_interval=settings.BOT_DATABASE_UPDATE_INTERVAL,
     )
 
     # Default
@@ -92,19 +115,20 @@ def run():
     admin_filter = filters.User(user_id=settings.ADMIN_IDS)
 
     app.add_handler(TypeHandler(Update, track_users), group=-1)
-    app.add_handlers([
-        CommandHandler("start", conversations.start_command_handler),
-        CommandHandler("panel", conversations.admin_start_command_handler, filters=admin_filter),
-
-        MessageHandler(filters.TEXT, state_handler),
-        MessageHandler(filters.Document.ALL, document_state_handler),
-    ])
+    app.add_handlers(
+        [
+            CommandHandler("start", conversations.start_command_handler),
+            CommandHandler("panel", conversations.admin_start_command_handler, filters=admin_filter),
+            MessageHandler(filters.TEXT, state_handler),
+            MessageHandler(filters.Document.ALL, document_state_handler),
+            CallbackQueryHandler(inline_state_handler),
+        ]
+    )
 
     # Errors
     app.add_error_handler(error)
 
-    # TODO: Check edited message
-    app.run_polling(allowed_updates=Update.MESSAGE)
+    app.run_polling(allowed_updates=[Update.MESSAGE, Update.CALLBACK_QUERY])
 
 
 if __name__ == "__main__":
