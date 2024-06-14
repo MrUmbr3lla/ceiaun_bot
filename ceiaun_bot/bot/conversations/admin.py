@@ -40,7 +40,8 @@ async def admin_panel_handler(update: Update, context: CustomContext):
         await update.message.reply_text(
             text=messages.ADMIN_STAT.format(
                 request_count=len(context.request_list),
-                users_count=len(context.bot_user_ids)
+                summer_request_count=len(context.summer_request_list),
+                users_count=len(context.bot_user_ids),
             ),
             reply_markup=keyboards.ADMIN_KEYBOARD,
             quote=True,
@@ -53,14 +54,14 @@ async def admin_panel_handler(update: Update, context: CustomContext):
             await update.message.reply_text(
                 text=messages.ADMIN_GET_FILE_NONE,
                 reply_markup=keyboards.ADMIN_KEYBOARD,
-                quote=True
+                quote=True,
             )
             return None
 
         await update.message.reply_text(
             text=messages.ADMIN_GET_FILE_TITLE,
             reply_markup=keyboards.BACK_KEYBOARD,
-            quote=True
+            quote=True,
         )
 
         return consts.STATE_ADMIN_GET_FILE
@@ -69,7 +70,7 @@ async def admin_panel_handler(update: Update, context: CustomContext):
         await update.message.reply_text(
             text=messages.ADMIN_GET_FILE_ID,
             reply_markup=keyboards.BACK_KEYBOARD,
-            quote=True
+            quote=True,
         )
 
         return consts.STATE_ADMIN_FILE_ID
@@ -78,7 +79,7 @@ async def admin_panel_handler(update: Update, context: CustomContext):
         await update.message.reply_text(
             text=messages.ADMIN_CLEAN_REQ_LIST,
             reply_markup=keyboards.BACK_KEYBOARD,
-            quote=True
+            quote=True,
         )
 
         return consts.STATE_ADMIN_CLEAN_REQ
@@ -87,7 +88,7 @@ async def admin_panel_handler(update: Update, context: CustomContext):
         await update.message.reply_text(
             text=messages.ADMIN_SEND_MSG_GET,
             reply_markup=keyboards.BACK_KEYBOARD,
-            quote=True
+            quote=True,
         )
 
         return consts.STATE_ADMIN_SEND_MSG
@@ -130,7 +131,7 @@ async def admin_send_file_id_handler(update: Update, context: CustomContext):
 
     result = await context.bot.send_document(
         chat_id=settings.BACKUP_CH_ID,
-        document=update.message.document.file_id
+        document=update.message.document.file_id,
     )
 
     await update.message.reply_text(
@@ -155,7 +156,7 @@ async def admin_clean_request_list_handler(update: Update, context: CustomContex
         f"{text} (1-{len(course_requests)})",
         text,
         course_requests,
-        ["A", "B", "C", "D"]
+        ["A", "B", "C", "D"],
     )
     # Clean list
     context.request_list = []
@@ -189,13 +190,13 @@ async def admin_send_message_handler(update: Update, context: CustomContext):
 
         result = await context.bot.send_message(
             chat_id=for_user_id,
-            text=messages.ADMIN_SEND_MSG_TEMPLATE.format(message=for_user_message)
+            text=messages.ADMIN_SEND_MSG_TEMPLATE.format(message=for_user_message),
         )
         result_message = messages.ADMIN_SEND_MSG_SUCCESS.format(
             user=f"<a href='tg://user?id={for_user_id}'>{for_user_id}</a>",
             message_id=result.id,
             name=result.chat.full_name,
-            username=result.chat.username
+            username=result.chat.username,
         )
     except Exception as e:
         result_message = str(e)
