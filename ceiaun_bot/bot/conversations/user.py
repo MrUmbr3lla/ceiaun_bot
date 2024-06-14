@@ -82,6 +82,11 @@ async def home_handler(update: Update, context: CustomContext):
 
     # students requests
     if text == keyboards.HOME_COURSE_REQUEST:
+        if settings.REQUEST_CLOSE:
+            await update.message.reply_text(text=messages.REQ_CLOSE, reply_markup=keyboards.HOME_KEYBOARD, quote=True)
+
+            return None
+
         await update.message.reply_document(
             document=settings.FILE_COURSE_REQUEST,
             caption=messages.REQ_COMMAND,
@@ -92,6 +97,13 @@ async def home_handler(update: Update, context: CustomContext):
         return consts.STATE_REQUEST_COURSE
 
     if text == keyboards.HOME_SUMMER_REQUEST:
+        if settings.SUMMER_REQUEST_CLOSE:
+            await update.message.reply_text(
+                text=messages.SUMMER_REQ_CLOSED, reply_markup=keyboards.HOME_KEYBOARD, quote=True
+            )
+
+            return None
+
         context.user_summer_course_status = {course.id: False for course in SUMMER_REQUEST_COURSES}
 
         result = await update.message.reply_text(
@@ -157,6 +169,17 @@ async def request_course_handler(update: Update, context: CustomContext):
 async def summer_request_handler(update: Update, context: CustomContext):
     query = update.callback_query
 
+    if query.data == inline_keyboards.SUMMER_REQUEST_BACK_QUERY or settings.SUMMER_REQUEST_CLOSE:
+        await query.answer()
+        await query.edit_message_text(text=messages.SUMMER_REQ_CANCELED)
+        await context.bot.send_message(
+            chat_id=query.from_user.id,
+            text=messages.HOME_SHORT,
+            reply_markup=keyboards.HOME_KEYBOARD,
+        )
+
+        return consts.STATE_HOME
+
     if query.data.startswith("course"):
         course_id = int(query.data.replace("course-", ""))
         course_status = context.user_summer_course_status
@@ -186,17 +209,6 @@ async def summer_request_handler(update: Update, context: CustomContext):
         )
 
         return consts.STATE_SUMMER_REQUEST_GET_NAME
-
-    if query.data == inline_keyboards.SUMMER_REQUEST_BACK_QUERY:
-        await query.answer()
-        await query.edit_message_text(text=messages.SUMMER_REQ_CANCELED)
-        await context.bot.send_message(
-            chat_id=query.from_user.id,
-            text=messages.HOME_SHORT,
-            reply_markup=keyboards.HOME_KEYBOARD,
-        )
-
-        return consts.STATE_HOME
 
 
 async def summer_request_get_name_handler(update: Update, context: CustomContext):
