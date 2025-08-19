@@ -6,8 +6,6 @@ from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent
 
-print("BASE_DIR", BASE_DIR)
-
 # Logging
 LOGS_DIR = BASE_DIR / "logs"
 os.makedirs(LOGS_DIR, exist_ok=True)
