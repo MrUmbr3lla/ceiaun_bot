@@ -7,7 +7,8 @@ from decouple import config
 BASE_DIR = Path(__file__).resolve().parent
 
 # Logging
-os.makedirs(BASE_DIR / "logs", exist_ok=True)
+LOGS_DIR = BASE_DIR / "logs"
+os.makedirs(LOGS_DIR, exist_ok=True)
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -26,7 +27,7 @@ LOGGING = {
         "log_file": {
             "level": "INFO",
             "class": "logging.handlers.RotatingFileHandler",
-            "filename": "logs/info.log",
+            "filename": LOGS_DIR / "info.log",
             "maxBytes": 1024 * 1024 * 10,  # 10 MB
             "backupCount": 5,
             "formatter": "standard",
@@ -34,7 +35,7 @@ LOGGING = {
         "log_request": {
             "level": "INFO",
             "class": "logging.handlers.RotatingFileHandler",
-            "filename": "logs/requests.log",
+            "filename": LOGS_DIR / "requests.log",
             "maxBytes": 1024 * 1024 * 10,  # 10 MB
             "backupCount": 5,
             "formatter": "standard",
@@ -42,7 +43,7 @@ LOGGING = {
         "log_bad_request": {
             "level": "INFO",
             "class": "logging.handlers.RotatingFileHandler",
-            "filename": "logs/bad_requests.log",
+            "filename": LOGS_DIR / "bad_requests.log",
             "maxBytes": 1024 * 1024 * 10,  # 10 MB
             "backupCount": 10,
             "formatter": "standard",

@@ -7,7 +7,7 @@ from bot.context import CustomContext
 async def back_home_handler(update: Update, context: CustomContext):
     await update.message.reply_text(
         text=messages.HOME_SHORT,
-        quote=True,
+        do_quote=True,
         reply_markup=keyboards.HOME_KEYBOARD,
     )
 

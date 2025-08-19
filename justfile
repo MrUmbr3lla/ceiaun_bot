@@ -1,12 +1,9 @@
-set dotenv-filename := "ceiaun_bot/.env"
+set dotenv-filename := ".env"
 set dotenv-load := true
 
-src_dir := "ceiaun_bot"
-
 # Aliases
-alias upd := up-dev
-alias updb := up-dev-build
-alias updbr := up-dev-build-recreate
+alias upr := up-recreate
+alias upbr := up-build-recreate
 alias imgprun := image-prune
 alias pre := run-pre-commit
 alias repre := reinstall-pre-commit
@@ -14,25 +11,24 @@ alias repre := reinstall-pre-commit
 default:
     @just --list --unsorted
 
-# Docker
-
+# Docker compose command
 _docker *args="":
-    docker compose -f {{ src_dir }}/docker-compose.yml {{ args }}
+    docker compose -f docker-compose.yml {{ args }}
 
-# Docker command for development
+# Docker command
 docker *args:
     @just _docker {{ args }}
 
-# Docker compose up for development
-up-dev *flags="":
+# Docker compose up
+up *flags="":
     @just docker up {{ flags }}
 
-# Docker compose up for development with --build argument
-up-dev-build:
-    @just docker up --build
+# Docker compose up with --force-recreate argument
+up-recreate:
+    @just docker up --force-recreate
 
-# Docker compose up for development with --build and --force-recreate argument
-up-dev-build-recreate *flags="":
+# Docker compose up with --build and --force-recreate argument
+up-build-recreate *flags="":
     @just docker up --build --force-recreate {{ flags }}
 
 # Remove dangling docker image

@@ -1,6 +1,6 @@
 import logging
 
-from telegram import Update
+from telegram import LinkPreviewOptions, Update
 from telegram.constants import ParseMode
 from telegram.ext import (
     AIORateLimiter,
@@ -62,7 +62,10 @@ async def state_handler(update: Update, context: CustomContext):
 
 
 async def inline_state_handler(update: Update, context: CustomContext):
-    if context.user_last_inline_message and context.user_last_inline_message != update.callback_query.message.id:
+    if (
+        context.user_last_inline_message
+        and context.user_last_inline_message != update.callback_query.message.message_id
+    ):
         return None
 
     user_state = context.user_state
@@ -104,7 +107,10 @@ def run():
     )
 
     # Default
-    defaults = Defaults(parse_mode=ParseMode.HTML, disable_web_page_preview=True)
+    defaults = Defaults(
+        parse_mode=ParseMode.HTML,
+        link_preview_options=LinkPreviewOptions(is_disabled=True),
+    )
 
     context_types = ContextTypes(context=CustomContext)
     app = (

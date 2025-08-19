@@ -4,11 +4,11 @@ from bot import consts, keyboards, messages
 from bot.context import CustomContext
 
 
-async def admin_back_handler(update: Update, context: CustomContext):
+async def start_command_handler(update: Update, context: CustomContext):
     await update.message.reply_text(
         text=messages.ADMIN_HOME,
-        quote=True,
         reply_markup=keyboards.ADMIN_KEYBOARD,
+        do_quote=True,
     )
 
-    return consts.STATE_ADMIN
+    context.user_data["state"] = consts.STATE_ADMIN

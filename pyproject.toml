@@ -1,19 +1,27 @@
-[tool.black]
-line-length = 120
-target-version = ["py311"]
-extend-exclude = '''
-(
-  /(
-      \.git
-    | \venv
-  )/
-)
-'''
+[project]
+name = "ceiaun-bot"
+version = "1.0.0"
+description = "IAUN Computer Engineering Bot"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "aiolimiter~=1.2.1",
+    "openpyxl~=3.1.5",
+    "python-decouple~=3.8",
+    "python-telegram-bot~=22.3",
+    "unidecode~=1.4.0",
+]
+
+[dependency-groups]
+dev = [
+    "pre-commit~=4.3.0",
+    "ruff~=0.12.9",
+]
 
 [tool.ruff]
 line-length = 120
 target-version = "py311"
-src = ["ceiaun_bot"]
+src = ["src"]
 
 [tool.ruff.lint]
 extend-select = ["I"]

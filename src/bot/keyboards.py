@@ -4,7 +4,7 @@ from telegram import KeyboardButton, ReplyKeyboardMarkup
 HOME_COURSE_REQUEST = "درخواست افزایش ظرفیت 📮"
 HOME_SUMMER_REQUEST = "درخواست دروس تابستان 🏖"
 HOME_CONVERT_NAME = "ابزار تبدیل متن 🔃"
-HOME_CHART = "چارت دروس 📚"
+# HOME_CHART = "چارت دروس 📚"
 
 HOME_KEYBOARD = ReplyKeyboardMarkup(
     [
@@ -16,7 +16,7 @@ HOME_KEYBOARD = ReplyKeyboardMarkup(
         ],
         [
             KeyboardButton(HOME_CONVERT_NAME),
-            KeyboardButton(HOME_CHART),
+            # KeyboardButton(HOME_CHART),
         ],
     ],
     resize_keyboard=True,
