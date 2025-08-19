@@ -79,7 +79,7 @@ async def summer_request_get_name_handler(update: Update, context: CustomContext
         result = await update.message.reply_text(
             text=e.args[0],
             reply_markup=inline_keyboards.SUMMER_REQUEST_GET_NAME_KEYBOARD,
-            quote=True,
+            do_quote=True,
         )
         context.user_last_inline_message = result.message_id
 
@@ -100,7 +100,7 @@ async def summer_request_get_name_handler(update: Update, context: CustomContext
     await update.message.reply_text(
         text=messages.SUMMER_REQ_SUCCESS,
         reply_markup=keyboards.HOME_KEYBOARD,
-        quote=True,
+        do_quote=True,
     )
     context.user_last_inline_message = None
 

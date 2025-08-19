@@ -26,7 +26,7 @@ async def request_course_handler(update: Update, context: CustomContext):
         await update.message.reply_text(
             text=e.args[0],
             reply_markup=keyboards.BACK_KEYBOARD,
-            quote=True,
+            do_quote=True,
         )
         bad_request_logger.info(f"user {user_id} with username @{username} has bad request with id {e.args[1]}: {text}")
         return None
@@ -37,5 +37,5 @@ async def request_course_handler(update: Update, context: CustomContext):
     await update.message.reply_text(
         text=messages.REQ_RECEIVED_REQ,
         reply_markup=keyboards.BACK_KEYBOARD,
-        quote=True,
+        do_quote=True,
     )

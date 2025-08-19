@@ -22,6 +22,6 @@ async def convert_course_handler(update: Update, context: CustomContext):
 
     await update.message.reply_text(
         text=messages.CONVERT_NAME_RESULT.format(result=result),
-        quote=True,
+        do_quote=True,
         reply_markup=keyboards.BACK_KEYBOARD,
     )

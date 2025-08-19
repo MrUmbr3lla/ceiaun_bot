@@ -19,7 +19,7 @@ async def panel_handler(update: Update, context: CustomContext):
                 users_count=len(context.bot_user_ids),
             ),
             reply_markup=keyboards.ADMIN_KEYBOARD,
-            quote=True,
+            do_quote=True,
         )
 
         return consts.STATE_ADMIN
@@ -29,14 +29,14 @@ async def panel_handler(update: Update, context: CustomContext):
             await update.message.reply_text(
                 text=messages.ADMIN_GET_FILE_NONE,
                 reply_markup=keyboards.ADMIN_KEYBOARD,
-                quote=True,
+                do_quote=True,
             )
             return None
 
         await update.message.reply_text(
             text=messages.ADMIN_GET_FILE_TITLE,
             reply_markup=keyboards.BACK_KEYBOARD,
-            quote=True,
+            do_quote=True,
         )
 
         return consts.STATE_ADMIN_GET_FILE
@@ -45,7 +45,7 @@ async def panel_handler(update: Update, context: CustomContext):
         await update.message.reply_text(
             text=messages.ADMIN_GET_FILE_ID,
             reply_markup=keyboards.BACK_KEYBOARD,
-            quote=True,
+            do_quote=True,
         )
 
         return consts.STATE_ADMIN_FILE_ID
@@ -54,7 +54,7 @@ async def panel_handler(update: Update, context: CustomContext):
         await update.message.reply_text(
             text=messages.ADMIN_CLEAN_REQ_LIST,
             reply_markup=keyboards.BACK_KEYBOARD,
-            quote=True,
+            do_quote=True,
         )
 
         return consts.STATE_ADMIN_CLEAN_REQ
@@ -63,7 +63,7 @@ async def panel_handler(update: Update, context: CustomContext):
         await update.message.reply_text(
             text=messages.ADMIN_SEND_MSG_GET,
             reply_markup=keyboards.BACK_KEYBOARD,
-            quote=True,
+            do_quote=True,
         )
 
         return consts.STATE_ADMIN_SEND_MSG
@@ -72,7 +72,7 @@ async def panel_handler(update: Update, context: CustomContext):
         await update.message.reply_text(
             text=messages.ADMIN_SUMMER_REQUEST_TITLE,
             reply_markup=keyboards.BACK_KEYBOARD,
-            quote=True,
+            do_quote=True,
         )
 
         return consts.STATE_ADMIN_SUMMER_REQUEST
@@ -81,7 +81,7 @@ async def panel_handler(update: Update, context: CustomContext):
         await update.message.reply_text(
             text=messages.ADMIN_CLEAN_SUMMER_REQUEST_TITLE,
             reply_markup=keyboards.BACK_KEYBOARD,
-            quote=True,
+            do_quote=True,
         )
 
         return consts.STATE_ADMIN_CLEAN_SUMMER_REQUEST
@@ -90,7 +90,7 @@ async def panel_handler(update: Update, context: CustomContext):
         await update.message.reply_text(
             text=messages.ADMIN_SEND_MSH_TO_ALL,
             reply_markup=keyboards.BACK_KEYBOARD,
-            quote=True,
+            do_quote=True,
         )
 
         return consts.STATE_ADMIN_SEND_MSG_TO_ALL
@@ -99,7 +99,7 @@ async def panel_handler(update: Update, context: CustomContext):
         result = await update.message.reply_text(
             text=messages.ADMIN_STATUS,
             reply_markup=inline_keyboards.generate_admin_status_inline_keyboard(context.flags),
-            quote=True,
+            do_quote=True,
         )
         context.user_last_inline_message = result.message_id
 

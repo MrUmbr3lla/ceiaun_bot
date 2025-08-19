@@ -12,7 +12,7 @@ To run project, follow the steps below:
 
    ```bash
    git clone https://github.com/MrUmbr3lla/ceiaun_bot.git
-   cd ceiaun_bot/ceiaun_bot
+   cd ceiaun_bot
    ```
 
 2. Copy the `.env.example` file and fill in the required information:

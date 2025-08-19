@@ -7,7 +7,7 @@ from bot.context import CustomContext
 
 async def start_command_handler(update: Update, context: CustomContext):
     await update.message.reply_document(
-        quote=True,
+        do_quote=True,
         document=settings.FILE_HOME_IMAGE,
         reply_markup=keyboards.HOME_KEYBOARD,
         caption=messages.START_COMMAND,

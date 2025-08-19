@@ -40,7 +40,7 @@ async def send_message_to_user_handler(update: Update, context: CustomContext):
     await update.message.reply_text(
         text=result_message,
         reply_markup=keyboards.ADMIN_KEYBOARD,
-        quote=True,
+        do_quote=True,
     )
 
     return consts.STATE_ADMIN
@@ -63,6 +63,10 @@ async def send_message_to_all_handler(update: Update, context: CustomContext):
         except Exception as e:
             logger.error(f"send to all error for user {chat_id}: {e}")
 
-    await update.message.reply_text(text=messages.ADMIN_HOME, quote=True, reply_markup=keyboards.ADMIN_KEYBOARD)
+    await update.message.reply_text(
+        text=messages.ADMIN_HOME,
+        do_quote=True,
+        reply_markup=keyboards.ADMIN_KEYBOARD,
+    )
 
     return consts.STATE_ADMIN
