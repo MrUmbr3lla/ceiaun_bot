@@ -3,13 +3,13 @@ __pycache__
 *.pyc
 
 botenv
-venv
+.venv
 .env
 .env.prod
 
 generated_files
 logs
-*/data/bot
+src/data/bot
 
 transfer.sh
 backup.sh
